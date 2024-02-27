@@ -18,14 +18,14 @@ model User {
   username            String      @unique
   email               String      @unique
   password            String
-  profileVisibility   Boolean     @default(false) @map("profile_visibilty")
-  allowDm             Boolean     @default(false) @map("allow_dm")
-  createdAt           DateTime    @default(now()) @map("created_at")
+  profileVisibility   Boolean     @default(false) 
+  allowDm             Boolean     @default(false)
+  createdAt           DateTime    @default(now()) 
 
   posts               Post[]
   memberships         Membership[]
-  sentMessages        Message[]   @relation("Sender") @map("sent_messages")
-  receivedMessages    Message[]   @relation("Recipient") @map("received_messages")
+  sentMessages        Message[]   @relation("Sender") 
+  receivedMessages    Message[]   @relation("Recipient")
   followers           Follow[]    @relation("Followers") 
   followed            Follow[]    @relation("Followed")
   activities          Activity[]
@@ -38,7 +38,7 @@ model Community {
   id                  String      @id @default(uuid())
   name                String      @unique
   description         String     
-  createdAt           DateTime    @default(now()) @map("created_at")
+  createdAt           DateTime    @default(now())
 
   posts               Post[]
   memberships         Membership[]
@@ -49,7 +49,7 @@ model Community {
 model Membership {
   userId              String         
   communityId         String
-  createdAt           DateTime    @default(now()) @map("created_at")
+  createdAt           DateTime    @default(now()) 
   role                MemberRole  @default(MEMBER)
 
   user                User        @relation(fields: [userId], references: [id])
@@ -68,13 +68,13 @@ enum MemberRole {
 model Post {
   id                   String       @id @default(uuid())
   slug                 String       @unique
-  userId               String       @map("user_id")
-  communityId          String       @map("community_id")
+  userId               String       
+  communityId          String       
   title                String
   content              String?
   upvotes              Int          @default(0)
   downvotes            Int          @default(0)
-  createdAt            DateTime     @default(now()) @map("created_at")
+  createdAt            DateTime     @default(now()) 
 
   user                 User         @relation(fields: [userId], references: [id])
   community            Community    @relation(fields: [communityId], references: [id])
@@ -89,7 +89,7 @@ model Message {
   from                 String      
   to                   String     
   content              String
-  createdAt            DateTime     @default(now()) @map("created_at")
+  createdAt            DateTime     @default(now()) 
 
   sender               User         @relation("Sender", fields: [from], references: [id])
   recipient            User         @relation("Recipient", fields: [to], references: [id])
@@ -98,9 +98,9 @@ model Message {
 }
 
 model Follow {
-  followerId           String       @map("follower_id")
-  followedId           String       @map("followed_id")
-  createdAt            DateTime     @default(now()) @map("created_at")
+  followerId           String       
+  followedId           String       
+  createdAt            DateTime     @default(now()) 
 
   follower             User         @relation("Followed", fields: [followerId], references: [id])
   followed             User         @relation("Followers", fields: [followedId], references: [id])
@@ -111,10 +111,10 @@ model Follow {
 
 model Activity {
   id                   String       @id @default(uuid())
-  userId               String       @map("user_id")
-  postId               String       @map("post_id")
-  activityType         ActivityType @map("activity_type")
-  createdAt            DateTime     @default(now()) @map("created_at")
+  userId               String       
+  postId               String       
+  activityType         ActivityType 
+  createdAt            DateTime     @default(now()) 
 
   user                 User         @relation(fields: [userId], references: [id])
   post                 Post         @relation(fields: [postId], references: [id])
@@ -130,10 +130,10 @@ enum ActivityType {
 
 model Comment {
   id                   String    @id @default(uuid())
-  postId               String    @map("post_id")
-  userId               String    @map("user_id")
+  postId               String    
+  userId               String    
   content              String
-  createdAt            DateTime  @default(now()) @map("created_at")
+  createdAt            DateTime  @default(now())
 
   post                 Post      @relation(fields: [postId], references: [id])
   user                 User      @relation(fields: [userId], references: [id])
