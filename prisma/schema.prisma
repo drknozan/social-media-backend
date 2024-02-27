@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String      @id  @default(uuid())
+  username            String      @unique
+  email               String      @unique
+  password            String
+  profileVisibility   Boolean     @default(false) @map("profile_visibilty")
+  allowDm             Boolean     @default(false) @map("allow_dm")
+  createdAt           DateTime    @default(now()) @map("created_at")
+
+  posts               Post[]
+  memberships         Membership[]
+  sentMessages        Message[]   @relation("Sender") @map("sent_messages")
+  receivedMessages    Message[]   @relation("Recipient") @map("received_messages")
+  followers           Follow[]    @relation("Followers") 
+  followed            Follow[]    @relation("Followed")
+  activities          Activity[]
+  comments            Comment[]
+
+  @@map("users")
+}
+
+model Community {
+  id                  String      @id @default(uuid())
+  name                String      @unique
+  description         String     
+  createdAt           DateTime    @default(now()) @map("created_at")
+
+  posts               Post[]
+  memberships         Membership[]
+
+  @@map("communities")
+}
+
+model Membership {
+  userId              String         
+  communityId         String
+  createdAt           DateTime    @default(now()) @map("created_at")
+  role                MemberRole  @default(MEMBER)
+
+  user                User        @relation(fields: [userId], references: [id])
+  community           Community   @relation(fields: [communityId], references: [id])
+
+  @@unique([userId, communityId])
+  @@map("memberships")
+}
+
+enum MemberRole {
+  MEMBER
+  MODERATOR
+  FOUNDER
+}
+
+model Post {
+  id                   String       @id @default(uuid())
+  slug                 String       @unique
+  userId               String       @map("user_id")
+  communityId          String       @map("community_id")
+  title                String
+  content              String?
+  upvotes              Int          @default(0)
+  downvotes            Int          @default(0)
+  createdAt            DateTime     @default(now()) @map("created_at")
+
+  user                 User         @relation(fields: [userId], references: [id])
+  community            Community    @relation(fields: [communityId], references: [id])
+  activity             Activity[]
+  comments             Comment[]
+
+  @@map("posts")
+}
+
+model Message {
+  id                   String       @id @default(uuid())
+  from                 String      
+  to                   String     
+  content              String
+  createdAt            DateTime     @default(now()) @map("created_at")
+
+  sender               User         @relation("Sender", fields: [from], references: [id])
+  recipient            User         @relation("Recipient", fields: [to], references: [id])
+
+  @@map("messages")
+}
+
+model Follow {
+  followerId           String       @map("follower_id")
+  followedId           String       @map("followed_id")
+  createdAt            DateTime     @default(now()) @map("created_at")
+
+  follower             User         @relation("Followed", fields: [followerId], references: [id])
+  followed             User         @relation("Followers", fields: [followedId], references: [id])
+
+  @@unique([followerId, followedId])
+  @@map("follows")
+}
+
+model Activity {
+  id                   String       @id @default(uuid())
+  userId               String       @map("user_id")
+  postId               String       @map("post_id")
+  activityType         ActivityType @map("activity_type")
+  createdAt            DateTime     @default(now()) @map("created_at")
+
+  user                 User         @relation(fields: [userId], references: [id])
+  post                 Post         @relation(fields: [postId], references: [id])
+
+  @@map("activities")
+}
+
+enum ActivityType {
+  UPVOTE
+  DOWNVOTE
+  COMMENT
+}
+
+model Comment {
+  id                   String    @id @default(uuid())
+  postId               String    @map("post_id")
+  userId               String    @map("user_id")
+  content              String
+  createdAt            DateTime  @default(now()) @map("created_at")
+
+  post                 Post      @relation(fields: [postId], references: [id])
+  user                 User      @relation(fields: [userId], references: [id])
+
+  @@map("comments")
+}
