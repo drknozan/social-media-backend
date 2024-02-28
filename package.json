@@ -8,11 +8,11 @@
     "start": "node ./build/index.js",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "docker:start:test": "docker-compose start testdb",
+    "docker:start:test": "docker-compose up -d testdb",
     "docker:stop:test": "docker-compose stop testdb",
     "migrate:postgres": "npx prisma migrate deploy",
     "migrate:test-postgres": "DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/prisma migrate deploy",
-    "test": "npm run docker:start:test && npm run migrate:test-postgres && DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest && npm run docker:stop:test"
+    "test": "npm run migrate:test-postgres && DOTENV_CONFIG_PATH=.env.test node -r dotenv/config ./node_modules/.bin/jest -i"
   },
   "keywords": [],
   "author": "",
