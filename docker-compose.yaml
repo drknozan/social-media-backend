@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  testdb:
+    image: postgres
+    restart: always
+    container_name: tests-db
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: tests

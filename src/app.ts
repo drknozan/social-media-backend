@@ -3,6 +3,8 @@ import cookieParser from 'cookie-parser';
 import HttpError from './utils/httpError';
 import routes from './routes';
 import morgan from 'morgan';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 
@@ -17,6 +19,7 @@ app.use(routes);
 
 // Catch 404
 app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(process.env.YO);
   next(new HttpError(404, 'Not found'));
 });
 
