@@ -28,4 +28,48 @@ const createCommunity = async (name: string, description: string): Promise<IComm
   return community;
 };
 
-export { createCommunity };
+const getCommunity = async (name: string): Promise<ICommunity> => {
+  const community = await prisma.community.findUnique({
+    where: {
+      name: name,
+    },
+    select: {
+      name: true,
+      description: true,
+      createdAt: true,
+      posts: {
+        select: {
+          slug: true,
+          title: true,
+          content: true,
+          upvotes: true,
+          downvotes: true,
+          createdAt: true,
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      },
+      memberships: {
+        select: {
+          user: {
+            select: {
+              username: true,
+            },
+          },
+          role: true,
+        },
+      },
+    },
+  });
+
+  if (!community) {
+    throw new HttpError(400, { message: 'No community found with given name' });
+  }
+
+  return community;
+};
+
+export { createCommunity, getCommunity };

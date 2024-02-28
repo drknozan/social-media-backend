@@ -13,4 +13,12 @@ const createCommunity = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-export { createCommunity };
+const getCommunity = async (req: Request, res: Response) => {
+  const { name } = req.params;
+
+  const community = await communityService.getCommunity(name);
+
+  return res.send(community);
+};
+
+export { createCommunity, getCommunity };
