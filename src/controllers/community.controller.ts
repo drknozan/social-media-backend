@@ -13,20 +13,40 @@ const createCommunity = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-const getCommunity = async (req: Request, res: Response) => {
+const getCommunity = async (req: Request, res: Response, next: NextFunction) => {
   const { name } = req.params;
 
-  const community = await communityService.getCommunity(name);
+  try {
+    const community = await communityService.getCommunity(name);
 
-  return res.send(community);
+    return res.send(community);
+  } catch (error) {
+    next(error);
+  }
 };
 
-const createMembership = async (req: Request, res: Response) => {
+const createMembership = async (req: Request, res: Response, next: NextFunction) => {
   const { communityName } = req.body;
 
-  const membership = await communityService.createMembership(communityName, req.user?.id);
+  try {
+    const membership = await communityService.createMembership(communityName, req.user?.id);
 
-  res.send(membership);
+    res.send(membership);
+  } catch (error) {
+    next(error);
+  }
 };
 
-export { createCommunity, getCommunity, createMembership };
+const updateMembership = async (req: Request, res: Response, next: NextFunction) => {
+  const { communityName, usernameToUpdate, role } = req.body;
+
+  try {
+    const membership = await communityService.updateMembership(communityName, usernameToUpdate, role, req.user?.id);
+
+    res.send(membership);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createCommunity, getCommunity, createMembership, updateMembership };

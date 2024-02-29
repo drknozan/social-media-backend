@@ -59,16 +59,6 @@ const getCommunity = async (communityName: string): Promise<ICommunity> => {
           },
         },
       },
-      memberships: {
-        select: {
-          user: {
-            select: {
-              username: true,
-            },
-          },
-          role: true,
-        },
-      },
     },
   });
 
@@ -93,7 +83,20 @@ const createMembership = async (communityName: string, userId: string): Promise<
   });
 
   if (!communityByName) {
-    throw new HttpError(400, 'No community found with given given name');
+    throw new HttpError(400, { message: 'No community found with given given name' });
+  }
+
+  const existingMembership = await prisma.membership.findUnique({
+    where: {
+      userId_communityId: {
+        userId,
+        communityId: communityByName.id,
+      },
+    },
+  });
+
+  if (existingMembership) {
+    throw new HttpError(400, { message: 'User is already member of given community' });
   }
 
   const membership = await prisma.membership.create({
@@ -119,4 +122,88 @@ const createMembership = async (communityName: string, userId: string): Promise<
   return { username: membership.user.username, communityName: membership.community.name, role: membership.role };
 };
 
-export { createCommunity, getCommunity, createMembership };
+const updateMembership = async (
+  communityName: string,
+  usernameToUpdate: string,
+  role: 'MEMBER' | 'FOUNDER' | 'MODERATOR',
+  userId: string,
+): Promise<IMembership> => {
+  const communityByName = await prisma.community.findFirst({
+    where: {
+      name: {
+        equals: communityName,
+        mode: 'insensitive',
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!communityByName) {
+    throw new HttpError(400, { message: 'No community found with given name' });
+  }
+
+  const userToUpdate = await prisma.user.findUnique({
+    where: {
+      username: usernameToUpdate,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!userToUpdate) {
+    throw new HttpError(400, { message: 'Current user not member of given community' });
+  }
+
+  const currentUserMembership = await prisma.membership.findUnique({
+    where: {
+      userId_communityId: {
+        userId: userId,
+        communityId: communityByName.id,
+      },
+    },
+  });
+
+  if (!currentUserMembership) {
+    throw new HttpError(400, { message: 'Current user not member of given community' });
+  }
+
+  if (currentUserMembership.role === 'MEMBER') {
+    throw new HttpError(403, { message: 'Not authorized to give community role' });
+  }
+
+  const updatedMembership = await prisma.membership.update({
+    where: {
+      userId_communityId: {
+        userId: userToUpdate.id,
+        communityId: communityByName.id,
+      },
+    },
+    data: {
+      role: role,
+    },
+    select: {
+      user: {
+        select: {
+          username: true,
+        },
+      },
+      community: {
+        select: {
+          name: true,
+        },
+      },
+      role: true,
+    },
+  });
+
+  return {
+    username: updatedMembership.user.username,
+    communityName: updatedMembership.community.name,
+    role: updatedMembership.role,
+  };
+};
+
+export { createCommunity, getCommunity, createMembership, updateMembership };

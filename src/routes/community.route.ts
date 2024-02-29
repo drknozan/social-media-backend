@@ -18,4 +18,8 @@ router
   .route('/community/:name/join')
   .post(validateAuth, validateRequest(communitySchema.createMembershipSchema), communityController.createMembership);
 
+router
+  .route('/community/:name/role')
+  .patch(validateAuth, validateRequest(communitySchema.updateMembershipSchema), communityController.updateMembership);
+
 export default router;

@@ -41,7 +41,7 @@ const register = async (username: string, email: string, password: string): Prom
     },
   });
 
-  const token = generateToken(createdUser.username);
+  const token = generateToken(createdUser.id);
 
   return {
     user: {

@@ -13,9 +13,7 @@ const createCommunitySchema = object({
 
 const getCommunitySchema = object({
   params: object({
-    communityName: string()
-      .max(40, 'Community name can be 40 characters maximum')
-      .required('Community name is required'),
+    name: string().max(40, 'Community name can be 40 characters maximum').required('Community name is required'),
   }),
 });
 
