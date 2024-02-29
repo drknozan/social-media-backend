@@ -49,4 +49,16 @@ const updateMembership = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-export { createCommunity, getCommunity, createMembership, updateMembership };
+const deleteMembership = async (req: Request, res: Response, next: NextFunction) => {
+  const { communityName } = req.body;
+
+  try {
+    await communityService.deleteMembership(communityName, req.user?.id);
+
+    res.send({ message: 'User has successfully left the community' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createCommunity, getCommunity, createMembership, updateMembership, deleteMembership };

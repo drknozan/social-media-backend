@@ -1,5 +1,11 @@
 import prisma from '../src/config/db';
-import { createCommunity, getCommunity, createMembership, updateMembership } from '../src/services/community.service';
+import {
+  createCommunity,
+  getCommunity,
+  createMembership,
+  updateMembership,
+  deleteMembership,
+} from '../src/services/community.service';
 
 beforeEach(async () => {
   await prisma.user.createMany({
@@ -278,5 +284,46 @@ test('throws error when user is already member of given community', async () => 
   } catch (error) {
     expect(error.statusCode).toBe(400);
     expect(error.message.message).toBe('User is already member of given community');
+  }
+});
+
+test('leave the community', async () => {
+  const userId = '1';
+  const communityId = '1';
+  const communityName = 'test-community';
+
+  await prisma.membership.create({
+    data: {
+      userId,
+      communityId,
+      role: 'MEMBER',
+    },
+  });
+
+  await deleteMembership(communityName, userId);
+
+  const deletedMembership = await prisma.membership.findUnique({
+    where: {
+      userId_communityId: {
+        userId,
+        communityId,
+      },
+    },
+  });
+
+  expect(deletedMembership).toBeNull();
+});
+
+test('throws error if a given user not member of given community when leaving the community', async () => {
+  expect.assertions(2);
+
+  const userId = '1';
+  const communityName = 'test-community';
+
+  try {
+    await deleteMembership(communityName, userId);
+  } catch (error) {
+    expect(error.statusCode).toBe(400);
+    expect(error.message.message).toBe('Current user not member of given community');
   }
 });

@@ -206,4 +206,38 @@ const updateMembership = async (
   };
 };
 
-export { createCommunity, getCommunity, createMembership, updateMembership };
+const deleteMembership = async (communityName: string, userId: string) => {
+  const communityByName = await prisma.community.findUnique({
+    where: {
+      name: communityName,
+    },
+  });
+
+  if (!communityByName) {
+    throw new HttpError(400, { message: 'No community found with given name' });
+  }
+
+  const membershipByName = await prisma.membership.findUnique({
+    where: {
+      userId_communityId: {
+        userId,
+        communityId: communityByName.id,
+      },
+    },
+  });
+
+  if (!membershipByName) {
+    throw new HttpError(400, { message: 'Current user not member of given community' });
+  }
+
+  await prisma.membership.delete({
+    where: {
+      userId_communityId: {
+        userId,
+        communityId: communityByName.id,
+      },
+    },
+  });
+};
+
+export { createCommunity, getCommunity, createMembership, updateMembership, deleteMembership };

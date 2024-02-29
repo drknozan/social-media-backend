@@ -22,4 +22,8 @@ router
   .route('/community/:name/role')
   .patch(validateAuth, validateRequest(communitySchema.updateMembershipSchema), communityController.updateMembership);
 
+router
+  .route('/community/:name/leave')
+  .post(validateAuth, validateRequest(communitySchema.deleteMembershipSchema), communityController.deleteMembership);
+
 export default router;

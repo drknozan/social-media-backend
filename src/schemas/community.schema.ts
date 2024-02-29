@@ -35,4 +35,18 @@ const updateMembershipSchema = object({
   }),
 });
 
-export { createCommunitySchema, getCommunitySchema, createMembershipSchema, updateMembershipSchema };
+const deleteMembershipSchema = object({
+  body: object({
+    communityName: string()
+      .max(40, 'Community name can be 40 characters maximum')
+      .required('Community name is required'),
+  }),
+});
+
+export {
+  createCommunitySchema,
+  getCommunitySchema,
+  createMembershipSchema,
+  updateMembershipSchema,
+  deleteMembershipSchema,
+};
