@@ -52,8 +52,8 @@ model Membership {
   createdAt           DateTime    @default(now()) 
   role                MemberRole  @default(MEMBER)
 
-  user                User        @relation(fields: [userId], references: [id])
-  community           Community   @relation(fields: [communityId], references: [id])
+  user                User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community           Community   @relation(fields: [communityId], references: [id], onDelete: Cascade)
 
   @@unique([userId, communityId])
   @@map("memberships")

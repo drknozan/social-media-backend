@@ -1,11 +1,15 @@
 import HttpError from '../utils/httpError';
 import prisma from '../config/db';
 import { ICommunity } from '../interfaces/ICommunity';
+import { IMembership } from '@/interfaces/IMembership';
 
-const createCommunity = async (name: string, description: string): Promise<ICommunity> => {
-  const existingCommunity = await prisma.community.findUnique({
+const createCommunity = async (communityName: string, description: string): Promise<ICommunity> => {
+  const existingCommunity = await prisma.community.findFirst({
     where: {
-      name,
+      name: {
+        equals: communityName,
+        mode: 'insensitive',
+      },
     },
   });
 
@@ -15,7 +19,7 @@ const createCommunity = async (name: string, description: string): Promise<IComm
 
   const community = await prisma.community.create({
     data: {
-      name,
+      name: communityName,
       description,
     },
     select: {
@@ -28,10 +32,13 @@ const createCommunity = async (name: string, description: string): Promise<IComm
   return community;
 };
 
-const getCommunity = async (name: string): Promise<ICommunity> => {
-  const community = await prisma.community.findUnique({
+const getCommunity = async (communityName: string): Promise<ICommunity> => {
+  const community = await prisma.community.findFirst({
     where: {
-      name: name,
+      name: {
+        equals: communityName,
+        mode: 'insensitive',
+      },
     },
     select: {
       name: true,
@@ -72,4 +79,44 @@ const getCommunity = async (name: string): Promise<ICommunity> => {
   return community;
 };
 
-export { createCommunity, getCommunity };
+const createMembership = async (communityName: string, userId: string): Promise<IMembership> => {
+  const communityByName = await prisma.community.findFirst({
+    where: {
+      name: {
+        equals: communityName,
+        mode: 'insensitive',
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!communityByName) {
+    throw new HttpError(400, 'No community found with given given name');
+  }
+
+  const membership = await prisma.membership.create({
+    data: {
+      userId: userId,
+      communityId: communityByName.id,
+    },
+    select: {
+      user: {
+        select: {
+          username: true,
+        },
+      },
+      community: {
+        select: {
+          name: true,
+        },
+      },
+      role: true,
+    },
+  });
+
+  return { username: membership.user.username, communityName: membership.community.name, role: membership.role };
+};
+
+export { createCommunity, getCommunity, createMembership };
