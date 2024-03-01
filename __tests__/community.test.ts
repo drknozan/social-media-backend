@@ -12,20 +12,20 @@ beforeEach(async () => {
     data: [
       {
         id: '1',
-        username: 'community-user',
-        email: 'community-user@test.com',
+        username: 'user',
+        email: 'user@test.com',
         password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
       },
       {
         id: '2',
-        username: 'community-user2',
-        email: 'community-user2@test.com',
+        username: 'second-user',
+        email: 'second-user@test.com',
         password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
       },
       {
         id: '3',
-        username: 'community-user-mod',
-        email: 'community-user-mod@test.com',
+        username: 'mod-user',
+        email: 'mod-user@test.com',
         password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
       },
     ],
@@ -34,7 +34,7 @@ beforeEach(async () => {
   await prisma.community.create({
     data: {
       id: '1',
-      name: 'test-community',
+      name: 'community',
       description: 'test-description',
     },
   });
@@ -67,7 +67,7 @@ test('creates a new community', async () => {
 test('fails to create a community with existing name', async () => {
   expect.assertions(2);
 
-  const existingCommunityName = 'test-community';
+  const existingCommunityName = 'community';
   const existingCommunityDescription = 'This community already exists';
 
   try {
@@ -79,7 +79,7 @@ test('fails to create a community with existing name', async () => {
 });
 
 test('gets an existing community', async () => {
-  const communityName = 'test-community';
+  const communityName = 'community';
 
   const community = await getCommunity(communityName);
 
@@ -100,8 +100,8 @@ test('fails to get a non-existing community', async () => {
 });
 
 test('creates a membership for a user in a community', async () => {
-  const communityName = 'test-community';
-  const username = 'community-user';
+  const communityName = 'community';
+  const username = 'user';
   const userId = '1';
 
   const membership = await createMembership(communityName, userId);
@@ -151,8 +151,8 @@ test('fails to create a membership for non-existing community', async () => {
 
 test('updates membership role successfully', async () => {
   const userCurrentId = '3';
-  const usernameToUpdate = 'community-user2';
-  const communityName = 'test-community';
+  const usernameToUpdate = 'second-user';
+  const communityName = 'community';
   const roleToUpdate = 'MODERATOR';
 
   await prisma.membership.create({
@@ -213,8 +213,8 @@ test('throws error when current user role is MEMBER', async () => {
   expect.assertions(2);
 
   const userCurrentId = '1';
-  const usernameToUpdate = 'community-user2';
-  const communityName = 'test-community';
+  const usernameToUpdate = 'second-user';
+  const communityName = 'community';
   const roleToUpdate = 'MODERATOR';
 
   await prisma.membership.create({
@@ -245,8 +245,8 @@ test('throws error when current user role is not member/moderator/founder of giv
   expect.assertions(2);
 
   const userCurrentId = '1';
-  const usernameToUpdate = 'community-user2';
-  const communityName = 'test-community';
+  const usernameToUpdate = 'second-user';
+  const communityName = 'community';
   const roleToUpdate = 'MODERATOR';
 
   await prisma.membership.create({
@@ -269,7 +269,7 @@ test('throws error when user is already member of given community', async () => 
   expect.assertions(2);
 
   const userId = '1';
-  const communityName = 'test-community';
+  const communityName = 'community';
 
   await prisma.membership.create({
     data: {
@@ -290,7 +290,7 @@ test('throws error when user is already member of given community', async () => 
 test('leave the community', async () => {
   const userId = '1';
   const communityId = '1';
-  const communityName = 'test-community';
+  const communityName = 'community';
 
   await prisma.membership.create({
     data: {
@@ -318,7 +318,7 @@ test('throws error if a given user not member of given community when leaving th
   expect.assertions(2);
 
   const userId = '1';
-  const communityName = 'test-community';
+  const communityName = 'community';
 
   try {
     await deleteMembership(communityName, userId);

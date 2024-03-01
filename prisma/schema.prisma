@@ -76,8 +76,8 @@ model Post {
   downvotes            Int          @default(0)
   createdAt            DateTime     @default(now()) 
 
-  user                 User         @relation(fields: [userId], references: [id])
-  community            Community    @relation(fields: [communityId], references: [id])
+  user                 User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community            Community    @relation(fields: [communityId], references: [id], onDelete: Cascade)
   activity             Activity[]
   comments             Comment[]
 
