@@ -91,8 +91,8 @@ model Message {
   content              String
   createdAt            DateTime     @default(now()) 
 
-  sender               User         @relation("Sender", fields: [from], references: [id])
-  recipient            User         @relation("Recipient", fields: [to], references: [id])
+  sender               User         @relation("Sender", fields: [from], references: [id], onDelete: Cascade)
+  recipient            User         @relation("Recipient", fields: [to], references: [id], onDelete: Cascade)
 
   @@map("messages")
 }
@@ -102,8 +102,8 @@ model Follow {
   followedId           String       
   createdAt            DateTime     @default(now()) 
 
-  follower             User         @relation("Followed", fields: [followerId], references: [id])
-  followed             User         @relation("Followers", fields: [followedId], references: [id])
+  follower             User         @relation("Followed", fields: [followerId], references: [id], onDelete: Cascade)
+  followed             User         @relation("Followers", fields: [followedId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followedId])
   @@map("follows")
@@ -135,8 +135,8 @@ model Comment {
   content              String
   createdAt            DateTime  @default(now())
 
-  post                 Post      @relation(fields: [postId], references: [id])
-  user                 User      @relation(fields: [userId], references: [id])
+  post                 Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("comments")
 }

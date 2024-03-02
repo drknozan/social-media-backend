@@ -61,4 +61,17 @@ const downvotePost = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-export { createPost, getPost, deletePost, upvotePost, downvotePost };
+const createComment = async (req: Request, res: Response, next: NextFunction) => {
+  const { content } = req.body;
+  const { slug } = req.params;
+
+  try {
+    const comment = await postService.createComment(content, slug, req.user?.id);
+
+    res.send(comment);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createPost, getPost, deletePost, upvotePost, downvotePost, createComment };

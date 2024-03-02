@@ -24,4 +24,8 @@ router
   .route('/post/:slug/downvote')
   .put(validateAuth, validateRequest(postSchema.downvotePostSchema), postController.downvotePost);
 
+router
+  .route('/post/:slug/comment')
+  .post(validateAuth, validateRequest(postSchema.createCommentSchema), postController.createComment);
+
 export default router;

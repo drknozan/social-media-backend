@@ -1,4 +1,4 @@
-import { createPost, deletePost, downvotePost, getPost, upvotePost } from '../src/services/post.service';
+import { createComment, createPost, deletePost, downvotePost, getPost, upvotePost } from '../src/services/post.service';
 import prisma from '../src/config/db';
 
 beforeEach(async () => {
@@ -224,5 +224,42 @@ test('throws an error if user already downvoted post', async () => {
   } catch (error) {
     expect(error.statusCode).toBe(400);
     expect(error.message.message).toBe('User already downvoted this post');
+  }
+});
+
+test('creates comment and creates activity', async () => {
+  const content = 'test-content';
+  const userId = '2';
+  const postId = '1';
+  const slug = 'test';
+
+  await createComment(content, slug, userId);
+
+  await prisma.comment.findFirst({
+    where: {
+      userId,
+      postId,
+      content,
+    },
+    select: {
+      content: true,
+    },
+  });
+
+  expect(content).toEqual(content);
+});
+
+test('throws an error if post is not found while creating comment', async () => {
+  expect.assertions(2);
+
+  const content = 'test-content';
+  const userId = '2';
+  const slug = 'wrong';
+
+  try {
+    await createComment(content, slug, userId);
+  } catch (error) {
+    expect(error.statusCode).toBe(404);
+    expect(error.message.message).toBe('Post not found');
   }
 });

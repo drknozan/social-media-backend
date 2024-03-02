@@ -1,3 +1,4 @@
+import { IComment } from '../interfaces/IComment';
 import { IPost } from '../interfaces/IPost';
 import HttpError from '../utils/httpError';
 import { nanoid } from 'nanoid';
@@ -260,4 +261,44 @@ const downvotePost = async (slug: string, userId: string): Promise<IPost> => {
   return post;
 };
 
-export { createPost, getPost, deletePost, upvotePost, downvotePost };
+const createComment = async (content: string, slug: string, userId: string): Promise<IComment> => {
+  const postBySlug = await prisma.post.findUnique({
+    where: {
+      slug,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!postBySlug) {
+    throw new HttpError(404, { message: 'Post not found' });
+  }
+
+  const comment = await prisma.comment.create({
+    data: {
+      content,
+      postId: postBySlug.id,
+      userId,
+    },
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      user: {
+        select: {
+          username: true,
+        },
+      },
+      post: {
+        select: {
+          slug: true,
+        },
+      },
+    },
+  });
+
+  return comment;
+};
+
+export { createPost, getPost, deletePost, upvotePost, downvotePost, createComment };
