@@ -28,4 +28,8 @@ router
   .route('/post/:slug/comment')
   .post(validateAuth, validateRequest(postSchema.createCommentSchema), postController.createComment);
 
+router
+  .route('/post/:slug/:commentId')
+  .delete(validateAuth, validateRequest(postSchema.deleteCommentSchema), postController.deleteComment);
+
 export default router;

@@ -309,4 +309,23 @@ const createComment = async (content: string, slug: string, userId: string): Pro
   return comment;
 };
 
-export { createPost, getPost, deletePost, upvotePost, downvotePost, createComment };
+const deleteComment = async (commentId: string, userId: string): Promise<IComment> => {
+  const commentById = await prisma.comment.findUnique({ where: { id: commentId }, select: { userId: true } });
+
+  if (!commentById) {
+    throw new HttpError(404, { message: 'Comment not found' });
+  }
+
+  if (userId !== commentById.userId) {
+    throw new HttpError(403, { message: 'Not authorized to delete comment' });
+  }
+
+  const comment = await prisma.comment.delete({
+    where: { id: commentId },
+    select: { content: true, createdAt: true },
+  });
+
+  return comment;
+};
+
+export { createPost, getPost, deletePost, upvotePost, downvotePost, createComment, deleteComment };

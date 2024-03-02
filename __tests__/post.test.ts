@@ -1,4 +1,12 @@
-import { createComment, createPost, deletePost, downvotePost, getPost, upvotePost } from '../src/services/post.service';
+import {
+  createComment,
+  createPost,
+  deleteComment,
+  deletePost,
+  downvotePost,
+  getPost,
+  upvotePost,
+} from '../src/services/post.service';
 import prisma from '../src/config/db';
 
 beforeEach(async () => {
@@ -38,7 +46,16 @@ beforeEach(async () => {
     },
   });
 
-  return await prisma.$transaction([createUsers, createCommunities, createPosts]);
+  const createComments = prisma.comment.create({
+    data: {
+      id: '1',
+      postId: '1',
+      userId: '1',
+      content: 'test-comment',
+    },
+  });
+
+  return await prisma.$transaction([createUsers, createCommunities, createPosts, createComments]);
 });
 
 afterEach(async () => {
@@ -270,5 +287,44 @@ test('throws an error if post is not found while creating comment', async () => 
   } catch (error) {
     expect(error.statusCode).toBe(404);
     expect(error.message.message).toBe('Post not found');
+  }
+});
+
+test('deletes comment', async () => {
+  const userId = '1';
+  const commentId = '1';
+
+  await deleteComment(commentId, userId);
+
+  const deletedComment = await prisma.comment.findFirst({
+    where: {
+      id: commentId,
+    },
+  });
+
+  expect(deletedComment).toBeNull();
+});
+
+test('throws an error if there is no comment', async () => {
+  const commentId = '2';
+  const userId = '1';
+
+  try {
+    await deleteComment(commentId, userId);
+  } catch (error) {
+    expect(error.statusCode).toBe(404);
+    expect(error.message.message).toBe('Comment not found');
+  }
+});
+
+test('throws an error if the user is not the owner of the comment', async () => {
+  const userId = '2';
+  const commentId = '1';
+
+  try {
+    await deleteComment(commentId, userId);
+  } catch (error) {
+    expect(error.statusCode).toBe(403);
+    expect(error.message.message).toBe('Not authorized to delete comment');
   }
 });

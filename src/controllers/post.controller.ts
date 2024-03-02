@@ -74,4 +74,16 @@ const createComment = async (req: Request, res: Response, next: NextFunction) =>
   }
 };
 
-export { createPost, getPost, deletePost, upvotePost, downvotePost, createComment };
+const deleteComment = async (req: Request, res: Response, next: NextFunction) => {
+  const { commentId } = req.params;
+
+  try {
+    const comment = await postService.deleteComment(commentId, req.user?.id);
+
+    res.send(comment);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createPost, getPost, deletePost, upvotePost, downvotePost, createComment, deleteComment };
