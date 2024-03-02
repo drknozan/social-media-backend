@@ -1,4 +1,4 @@
-import { createPost, getPost } from '../src/services/post.service';
+import { createPost, deletePost, getPost } from '../src/services/post.service';
 import prisma from '../src/config/db';
 
 beforeEach(async () => {
@@ -8,6 +8,12 @@ beforeEach(async () => {
         id: '1',
         username: 'user',
         email: 'user@test.com',
+        password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
+      },
+      {
+        id: '2',
+        username: 'user2',
+        email: 'user2@test.com',
         password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
       },
     ],
@@ -99,8 +105,39 @@ test('throws an error if a user not member when creating post', async () => {
   }
 });
 
-test('gets post with given slug', async () => {
-  const post = await getPost('test');
+test('gets post by given slug', async () => {
+  const slug = 'test';
 
-  expect(post.slug).toEqual('test');
+  const post = await getPost(slug);
+
+  expect(post.slug).toEqual(slug);
+});
+
+test('deletes post by given slug', async () => {
+  const slug = 'test';
+  const postOwnerId = '1';
+
+  await deletePost(slug, postOwnerId);
+
+  const deletedPost = await prisma.post.findFirst({
+    where: {
+      slug,
+    },
+  });
+
+  expect(deletedPost).toBeNull();
+});
+
+test('throws an error if the user does not own the post', async () => {
+  expect.assertions(2);
+
+  const slug = 'test';
+  const userId = '2';
+
+  try {
+    await deletePost(slug, userId);
+  } catch (error) {
+    expect(error.statusCode).toBe(403);
+    expect(error.message.message).toBe('Not authorized to delete post');
+  }
 });

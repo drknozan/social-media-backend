@@ -25,4 +25,16 @@ const getPost = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createPost, getPost };
+const deletePost = async (req: Request, res: Response, next: NextFunction) => {
+  const { slug } = req.params;
+
+  try {
+    const post = await postService.deletePost(slug, req.user?.id);
+
+    res.send(post);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createPost, getPost, deletePost };

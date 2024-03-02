@@ -12,4 +12,8 @@ router
 
 router.route('/post/:slug').get(validateAuth, validateRequest(postSchema.getPostSchema), postController.getPost);
 
+router
+  .route('/post/:slug')
+  .delete(validateAuth, validateRequest(postSchema.deletePostSchema), postController.deletePost);
+
 export default router;

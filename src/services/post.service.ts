@@ -58,7 +58,7 @@ const createPost = async (communityName: string, title: string, content: string,
 const getPost = async (slug: string): Promise<IPost> => {
   const post = await prisma.post.findUnique({
     where: {
-      slug: slug,
+      slug,
     },
     select: {
       slug: true,
@@ -88,10 +88,44 @@ const getPost = async (slug: string): Promise<IPost> => {
   });
 
   if (!post) {
-    throw new HttpError(400, 'Post not found');
+    throw new HttpError(400, { message: 'Post not found' });
   }
 
   return post;
 };
 
-export { createPost, getPost };
+const deletePost = async (slug: string, userId: string): Promise<IPost> => {
+  const postBySlug = await prisma.post.findFirst({
+    where: {
+      slug,
+    },
+    select: {
+      userId: true,
+    },
+  });
+
+  if (userId !== postBySlug.userId) {
+    throw new HttpError(403, { message: 'Not authorized to delete post' });
+  }
+
+  const deletedPost = await prisma.post.delete({
+    where: { slug },
+    select: {
+      slug: true,
+      title: true,
+      content: true,
+      upvotes: true,
+      downvotes: true,
+      createdAt: true,
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+
+  return deletedPost;
+};
+
+export { createPost, getPost, deletePost };
