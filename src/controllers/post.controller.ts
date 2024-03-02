@@ -49,4 +49,16 @@ const upvotePost = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createPost, getPost, deletePost, upvotePost };
+const downvotePost = async (req: Request, res: Response, next: NextFunction) => {
+  const { slug } = req.params;
+
+  try {
+    const post = await postService.downvotePost(slug, req.user?.id);
+
+    res.send(post);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createPost, getPost, deletePost, upvotePost, downvotePost };

@@ -1,4 +1,4 @@
-import { createPost, deletePost, getPost, upvotePost } from '../src/services/post.service';
+import { createPost, deletePost, downvotePost, getPost, upvotePost } from '../src/services/post.service';
 import prisma from '../src/config/db';
 
 beforeEach(async () => {
@@ -182,5 +182,47 @@ test('throws an error if user already upvoted post', async () => {
   } catch (error) {
     expect(error.statusCode).toBe(400);
     expect(error.message.message).toBe('User already upvoted this post');
+  }
+});
+
+test('Increases the downvote count by one and creates activity', async () => {
+  const userId = '1';
+  const postId = '1';
+  const slug = 'test';
+
+  await downvotePost(slug, userId);
+
+  const downvotedPost = await prisma.post.findUnique({
+    where: {
+      slug,
+    },
+  });
+
+  expect(downvotedPost).toHaveProperty('downvotes', 1);
+
+  const createdActivity = await prisma.activity.findFirst({
+    where: {
+      userId,
+      postId,
+      activityType: 'DOWNVOTE',
+    },
+  });
+
+  expect(createdActivity).not.toBeNull();
+});
+
+test('throws an error if user already downvoted post', async () => {
+  expect.assertions(2);
+
+  const userId = '1';
+  const slug = 'test';
+
+  await downvotePost(slug, userId);
+
+  try {
+    await downvotePost(slug, userId);
+  } catch (error) {
+    expect(error.statusCode).toBe(400);
+    expect(error.message.message).toBe('User already downvoted this post');
   }
 });

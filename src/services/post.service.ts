@@ -196,4 +196,68 @@ const upvotePost = async (slug: string, userId: string): Promise<IPost> => {
   return post;
 };
 
-export { createPost, getPost, deletePost, upvotePost };
+const downvotePost = async (slug: string, userId: string): Promise<IPost> => {
+  const postBySlug = await prisma.post.findFirst({
+    where: {
+      slug,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!postBySlug) {
+    throw new HttpError(404, { message: 'Post not found' });
+  }
+
+  const existingActivity = await prisma.activity.findFirst({
+    where: {
+      userId,
+      postId: postBySlug.id,
+      activityType: 'DOWNVOTE',
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (existingActivity) {
+    throw new HttpError(400, { message: 'User already downvoted this post' });
+  }
+
+  const post = await prisma.post.update({
+    where: {
+      slug,
+    },
+    data: {
+      downvotes: {
+        increment: 1,
+      },
+    },
+    select: {
+      slug: true,
+      title: true,
+      content: true,
+      upvotes: true,
+      downvotes: true,
+      createdAt: true,
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+
+  await prisma.activity.create({
+    data: {
+      userId,
+      postId: postBySlug.id,
+      activityType: 'DOWNVOTE',
+    },
+  });
+
+  return post;
+};
+
+export { createPost, getPost, deletePost, upvotePost, downvotePost };
