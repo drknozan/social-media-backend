@@ -1,8 +1,8 @@
-import { createPost } from '../src/services/post.service';
+import { createPost, getPost } from '../src/services/post.service';
 import prisma from '../src/config/db';
 
 beforeEach(async () => {
-  await prisma.user.createMany({
+  const createUsers = prisma.user.createMany({
     data: [
       {
         id: '1',
@@ -13,13 +13,25 @@ beforeEach(async () => {
     ],
   });
 
-  await prisma.community.create({
+  const createCommunities = prisma.community.create({
     data: {
       id: '1',
       name: 'community',
       description: 'description',
     },
   });
+
+  const createPosts = prisma.post.create({
+    data: {
+      slug: 'test',
+      userId: '1',
+      communityId: '1',
+      title: 'test-title',
+      content: 'test-content',
+    },
+  });
+
+  return await prisma.$transaction([createUsers, createCommunities, createPosts]);
 });
 
 afterEach(async () => {
@@ -85,4 +97,10 @@ test('throws an error if a user not member when creating post', async () => {
     expect(error.statusCode).toBe(400);
     expect(error.message.message).toBe('Current user not member of given community');
   }
+});
+
+test('gets post with given slug', async () => {
+  const post = await getPost('test');
+
+  expect(post.slug).toEqual('test');
 });

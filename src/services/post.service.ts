@@ -55,4 +55,43 @@ const createPost = async (communityName: string, title: string, content: string,
   return newPost;
 };
 
-export { createPost };
+const getPost = async (slug: string): Promise<IPost> => {
+  const post = await prisma.post.findUnique({
+    where: {
+      slug: slug,
+    },
+    select: {
+      slug: true,
+      title: true,
+      content: true,
+      upvotes: true,
+      downvotes: true,
+      createdAt: true,
+      user: {
+        select: {
+          username: true,
+        },
+      },
+      comments: {
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!post) {
+    throw new HttpError(400, 'Post not found');
+  }
+
+  return post;
+};
+
+export { createPost, getPost };

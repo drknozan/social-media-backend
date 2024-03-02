@@ -13,4 +13,16 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createPost };
+const getPost = async (req: Request, res: Response, next: NextFunction) => {
+  const { slug } = req.params;
+
+  try {
+    const post = await postService.getPost(slug);
+
+    res.send(post);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createPost, getPost };

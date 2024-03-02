@@ -10,4 +10,6 @@ router
   .route('/post/create')
   .post(validateAuth, validateRequest(postSchema.createPostSchema), postController.createPost);
 
+router.route('/post/:slug').get(validateAuth, validateRequest(postSchema.getPostSchema), postController.getPost);
+
 export default router;
