@@ -104,6 +104,10 @@ const deletePost = async (slug: string, userId: string): Promise<IPost> => {
     },
   });
 
+  if (!postBySlug) {
+    throw new HttpError(404, { message: 'Post not found' });
+  }
+
   if (userId !== postBySlug.userId) {
     throw new HttpError(403, { message: 'Not authorized to delete post' });
   }
@@ -128,4 +132,68 @@ const deletePost = async (slug: string, userId: string): Promise<IPost> => {
   return deletedPost;
 };
 
-export { createPost, getPost, deletePost };
+const upvotePost = async (slug: string, userId: string): Promise<IPost> => {
+  const postBySlug = await prisma.post.findFirst({
+    where: {
+      slug,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!postBySlug) {
+    throw new HttpError(404, { message: 'Post not found' });
+  }
+
+  const existingActivity = await prisma.activity.findFirst({
+    where: {
+      userId,
+      postId: postBySlug.id,
+      activityType: 'UPVOTE',
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (existingActivity) {
+    throw new HttpError(400, { message: 'User already upvoted this post' });
+  }
+
+  const post = await prisma.post.update({
+    where: {
+      slug,
+    },
+    data: {
+      upvotes: {
+        increment: 1,
+      },
+    },
+    select: {
+      slug: true,
+      title: true,
+      content: true,
+      upvotes: true,
+      downvotes: true,
+      createdAt: true,
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+
+  await prisma.activity.create({
+    data: {
+      userId,
+      postId: postBySlug.id,
+      activityType: 'UPVOTE',
+    },
+  });
+
+  return post;
+};
+
+export { createPost, getPost, deletePost, upvotePost };

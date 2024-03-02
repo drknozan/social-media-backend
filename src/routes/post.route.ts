@@ -16,4 +16,8 @@ router
   .route('/post/:slug')
   .delete(validateAuth, validateRequest(postSchema.deletePostSchema), postController.deletePost);
 
+router
+  .route('/post/:slug/upvote')
+  .put(validateAuth, validateRequest(postSchema.upvotePostSchema), postController.upvotePost);
+
 export default router;

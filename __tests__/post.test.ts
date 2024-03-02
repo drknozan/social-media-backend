@@ -1,4 +1,4 @@
-import { createPost, deletePost, getPost } from '../src/services/post.service';
+import { createPost, deletePost, getPost, upvotePost } from '../src/services/post.service';
 import prisma from '../src/config/db';
 
 beforeEach(async () => {
@@ -29,6 +29,7 @@ beforeEach(async () => {
 
   const createPosts = prisma.post.create({
     data: {
+      id: '1',
       slug: 'test',
       userId: '1',
       communityId: '1',
@@ -139,5 +140,47 @@ test('throws an error if the user does not own the post', async () => {
   } catch (error) {
     expect(error.statusCode).toBe(403);
     expect(error.message.message).toBe('Not authorized to delete post');
+  }
+});
+
+test('Increases the upvote count by one and creates activity', async () => {
+  const userId = '1';
+  const postId = '1';
+  const slug = 'test';
+
+  await upvotePost(slug, userId);
+
+  const upvotedPost = await prisma.post.findUnique({
+    where: {
+      slug,
+    },
+  });
+
+  expect(upvotedPost).toHaveProperty('upvotes', 1);
+
+  const createdActivity = await prisma.activity.findFirst({
+    where: {
+      userId,
+      postId,
+      activityType: 'UPVOTE',
+    },
+  });
+
+  expect(createdActivity).not.toBeNull();
+});
+
+test('throws an error if user already upvoted post', async () => {
+  expect.assertions(2);
+
+  const userId = '1';
+  const slug = 'test';
+
+  await upvotePost(slug, userId);
+
+  try {
+    await upvotePost(slug, userId);
+  } catch (error) {
+    expect(error.statusCode).toBe(400);
+    expect(error.message.message).toBe('User already upvoted this post');
   }
 });

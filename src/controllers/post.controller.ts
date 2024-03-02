@@ -37,4 +37,16 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createPost, getPost, deletePost };
+const upvotePost = async (req: Request, res: Response, next: NextFunction) => {
+  const { slug } = req.params;
+
+  try {
+    const post = await postService.upvotePost(slug, req.user?.id);
+
+    res.send(post);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { createPost, getPost, deletePost, upvotePost };
