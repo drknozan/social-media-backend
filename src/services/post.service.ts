@@ -298,6 +298,14 @@ const createComment = async (content: string, slug: string, userId: string): Pro
     },
   });
 
+  await prisma.activity.create({
+    data: {
+      userId,
+      postId: postBySlug.id,
+      activityType: 'COMMENT',
+    },
+  });
+
   return comment;
 };
 

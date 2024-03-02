@@ -246,7 +246,16 @@ test('creates comment and creates activity', async () => {
     },
   });
 
+  const createdActivity = await prisma.activity.findFirst({
+    where: {
+      userId,
+      postId,
+      activityType: 'COMMENT',
+    },
+  });
+
   expect(content).toEqual(content);
+  expect(createdActivity).not.toBeNull();
 });
 
 test('throws an error if post is not found while creating comment', async () => {
