@@ -1,4 +1,4 @@
-import { object, string } from 'yup';
+import { boolean, object, string } from 'yup';
 
 const registerSchema = object({
   body: object({
@@ -21,4 +21,17 @@ const loginSchema = object({
   }),
 });
 
-export { registerSchema, loginSchema };
+const updateUserSchema = object({
+  body: object({
+    username: string().max(18, 'Username can be 18 characters maximum').optional(),
+    password: string()
+      .min(8, 'Password must be 8 characters minimum')
+      .max(30, 'Password can be 30 characters maximum')
+      .optional(),
+    email: string().email('No a valid email').optional(),
+    allowDm: boolean().optional(),
+    profileVisiblity: boolean().optional(),
+  }),
+});
+
+export { registerSchema, loginSchema, updateUserSchema };

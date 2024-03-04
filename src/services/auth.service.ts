@@ -159,4 +159,94 @@ const getCurrentUser = async (userId: string): Promise<IProfile> => {
   return user;
 };
 
-export { register, login, getCurrentUser };
+const updateUser = async (userInput, userId: string): Promise<IProfile> => {
+  const { email, password, allowDm, profileVisibility } = userInput;
+
+  let hashedPassword;
+
+  if (password) {
+    hashedPassword = await bcrypt.hash(password, 10);
+  }
+
+  const user = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      email: email || undefined,
+      password: hashedPassword || undefined,
+      allowDm: allowDm || undefined,
+      profileVisibility: profileVisibility || undefined,
+    },
+    select: {
+      username: true,
+      email: true,
+      allowDm: true,
+      profileVisibility: true,
+      posts: {
+        select: {
+          slug: true,
+          title: true,
+          content: true,
+          upvotes: true,
+          downvotes: true,
+          createdAt: true,
+          community: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+      followed: {
+        select: {
+          followed: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      },
+      followers: {
+        select: {
+          follower: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      },
+      memberships: {
+        select: {
+          community: {
+            select: {
+              name: true,
+            },
+          },
+          user: {
+            select: {
+              username: true,
+            },
+          },
+          role: true,
+        },
+      },
+      activities: {
+        select: {
+          post: {
+            select: {
+              slug: true,
+              title: true,
+            },
+          },
+          activityType: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+
+  return user;
+};
+
+export { register, login, getCurrentUser, updateUser };

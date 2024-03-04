@@ -45,4 +45,16 @@ const getCurrentUser = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-export { register, login, getCurrentUser };
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, password, allowDm, profileVisibility } = req.body;
+
+  try {
+    const user = await authService.updateUser({ email, password, allowDm, profileVisibility }, req.user?.id);
+
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { register, login, getCurrentUser, updateUser };

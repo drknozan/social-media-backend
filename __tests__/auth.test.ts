@@ -1,4 +1,4 @@
-import { login, register, getCurrentUser } from '../src/services/auth.service';
+import { login, register, getCurrentUser, updateUser } from '../src/services/auth.service';
 import prisma from '../src/config/db';
 
 beforeAll(async () => {
@@ -80,4 +80,25 @@ test('gets current user info', async () => {
   const user = await getCurrentUser(userId);
 
   expect(user).not.toBeNull();
+});
+
+test('updates user info', async () => {
+  const userId = '1';
+  const newEmail = 'new-email@test.com';
+  const newPassword = 'newpassword123';
+  const username = 'testuser';
+
+  await updateUser({ email: newEmail, password: newPassword, profileVisibility: true }, userId);
+
+  const updatedUser = await prisma.user.findFirst({
+    where: {
+      email: newEmail,
+    },
+  });
+
+  const user = await login(newEmail, newPassword);
+
+  expect(user.user.username).toEqual(username);
+  expect(updatedUser?.email).toEqual(newEmail);
+  expect(updatedUser?.profileVisibility).toEqual(true);
 });

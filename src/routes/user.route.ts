@@ -7,3 +7,5 @@ import * as userSchema from '../schemas/user.schema';
 const router = express.Router();
 
 router.route('/user/:username').get(validateAuth, validateRequest(userSchema.getUserSchema), userController.getUser);
+
+export default router;

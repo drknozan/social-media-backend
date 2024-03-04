@@ -12,4 +12,8 @@ router.route('/login').post(validateRequest(authSchema.loginSchema), authControl
 
 router.route('/profile').get(validateAuth, authController.getCurrentUser);
 
+router
+  .route('/profile/update')
+  .put(validateAuth, validateRequest(authSchema.updateUserSchema), authController.updateUser);
+
 export default router;
