@@ -1,4 +1,4 @@
-import { getUser } from '../src/services/user.service';
+import { followUser, getUser } from '../src/services/user.service';
 import prisma from '../src/config/db';
 
 beforeEach(async () => {
@@ -84,4 +84,40 @@ test('removes posts if userVisibility is set to false', async () => {
   const user = await getUser(username);
 
   expect(user.posts).toBeUndefined();
+});
+
+test('follows user', async () => {
+  const userId = '1';
+  const usernameToFollow = 'user2';
+  const userIdToFollow = '2';
+
+  await followUser(usernameToFollow, userId);
+
+  const follow = await prisma.follow.findUnique({
+    where: {
+      followerId_followedId: {
+        followedId: userIdToFollow,
+        followerId: userId,
+      },
+    },
+  });
+
+  expect(follow?.followedId).toEqual(userIdToFollow);
+  expect(follow?.followerId).toEqual(userId);
+});
+
+test('throws an error if user already following', async () => {
+  expect.assertions(2);
+
+  const userId = '1';
+  const usernameToFollow = 'user2';
+
+  await followUser(usernameToFollow, userId);
+
+  try {
+    await followUser(usernameToFollow, userId);
+  } catch (error) {
+    expect(error.statusCode).toBe(400);
+    expect(error.message.message).toBe('User is already following');
+  }
 });

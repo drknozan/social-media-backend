@@ -8,4 +8,8 @@ const router = express.Router();
 
 router.route('/user/:username').get(validateAuth, validateRequest(userSchema.getUserSchema), userController.getUser);
 
+router
+  .route('user/:username/follow')
+  .post(validateAuth, validateRequest(userSchema.followUserSchema), userController.followUser);
+
 export default router;
