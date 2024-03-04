@@ -195,8 +195,6 @@ test('updates membership role successfully', async () => {
     },
   });
 
-  console.log(updatedMembership);
-
   expect(updatedMembership).toEqual({
     user: { username: createdMembership?.user.username },
     community: { name: createdMembership?.community.name },
