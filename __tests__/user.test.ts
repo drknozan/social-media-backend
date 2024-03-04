@@ -1,4 +1,4 @@
-import { followUser, getUser } from '../src/services/user.service';
+import { followUser, getUser, unfollowUser } from '../src/services/user.service';
 import prisma from '../src/config/db';
 
 beforeEach(async () => {
@@ -119,5 +119,43 @@ test('throws an error if user already following', async () => {
   } catch (error) {
     expect(error.statusCode).toBe(400);
     expect(error.message.message).toBe('User is already following');
+  }
+});
+
+test('unfollows user', async () => {
+  const userId = '1';
+  const usernameToUnFollow = 'user2';
+  const userIdToUnFollow = '2';
+
+  await prisma.follow.create({
+    data: {
+      followedId: userIdToUnFollow,
+      followerId: userId,
+    },
+  });
+
+  await unfollowUser(usernameToUnFollow, userId);
+
+  const unfollow = await prisma.follow.findUnique({
+    where: {
+      followerId_followedId: {
+        followerId: userId,
+        followedId: userIdToUnFollow,
+      },
+    },
+  });
+
+  expect(unfollow).toBeNull();
+});
+
+test('throws an error if user not following given user', async () => {
+  const userId = '1';
+  const usernameToUnFollow = 'user2';
+
+  try {
+    await unfollowUser(usernameToUnFollow, userId);
+  } catch (error) {
+    expect(error.statusCode).toBe(400);
+    expect(error.message.message).toBe('Not following given user');
   }
 });

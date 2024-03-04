@@ -98,4 +98,56 @@ const followUser = async (username: string, userId: string): Promise<IFollow> =>
   return follow;
 };
 
-export { getUser, followUser };
+const unfollowUser = async (username: string, userId: string): Promise<IFollow> => {
+  const followedUser = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!followedUser) {
+    throw new HttpError(404, { message: 'User not found' });
+  }
+
+  const existingFollow = await prisma.follow.findUnique({
+    where: {
+      followerId_followedId: {
+        followerId: userId,
+        followedId: followedUser.id,
+      },
+    },
+  });
+
+  if (!existingFollow) {
+    throw new HttpError(400, { message: 'Not following given user' });
+  }
+
+  const follow = await prisma.follow.delete({
+    where: {
+      followerId_followedId: {
+        followerId: userId,
+        followedId: followedUser.id,
+      },
+    },
+    select: {
+      follower: {
+        select: {
+          username: true,
+        },
+      },
+      followed: {
+        select: {
+          username: true,
+        },
+      },
+      createdAt: true,
+    },
+  });
+
+  return follow;
+};
+
+export { getUser, followUser, unfollowUser };

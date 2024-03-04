@@ -12,4 +12,8 @@ router
   .route('user/:username/follow')
   .post(validateAuth, validateRequest(userSchema.followUserSchema), userController.followUser);
 
+router
+  .route('user/:username/unfollow')
+  .post(validateAuth, validateRequest(userSchema.unFollowUserSchema), userController.unfollowUser);
+
 export default router;
