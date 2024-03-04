@@ -119,7 +119,7 @@ const createMembership = async (communityName: string, userId: string): Promise<
     },
   });
 
-  return { username: membership.user.username, communityName: membership.community.name, role: membership.role };
+  return membership;
 };
 
 const updateMembership = async (
@@ -199,11 +199,7 @@ const updateMembership = async (
     },
   });
 
-  return {
-    username: updatedMembership.user.username,
-    communityName: updatedMembership.community.name,
-    role: updatedMembership.role,
-  };
+  return updatedMembership;
 };
 
 const deleteMembership = async (communityName: string, userId: string) => {

@@ -18,11 +18,11 @@ router
 
 router
   .route('/post/:slug/upvote')
-  .put(validateAuth, validateRequest(postSchema.upvotePostSchema), postController.upvotePost);
+  .patch(validateAuth, validateRequest(postSchema.upvotePostSchema), postController.upvotePost);
 
 router
   .route('/post/:slug/downvote')
-  .put(validateAuth, validateRequest(postSchema.downvotePostSchema), postController.downvotePost);
+  .patch(validateAuth, validateRequest(postSchema.downvotePostSchema), postController.downvotePost);
 
 router
   .route('/post/:slug/comment')

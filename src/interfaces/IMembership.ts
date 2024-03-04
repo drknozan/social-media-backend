@@ -1,5 +1,8 @@
+import { ICommunity } from './ICommunity';
+import { IUser } from './IUser';
+
 export interface IMembership {
-  username: string;
-  communityName: string;
+  community: ICommunity;
+  user: IUser;
   role: 'MEMBER' | 'MODERATOR' | 'FOUNDER';
 }

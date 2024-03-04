@@ -1,10 +1,11 @@
-import { login, register } from '../src/services/auth.service';
+import { login, register, getCurrentUser } from '../src/services/auth.service';
 import prisma from '../src/config/db';
 
 beforeAll(async () => {
   return await prisma.user.createMany({
     data: [
       {
+        id: '1',
         username: 'testuser',
         email: 'test@test.com',
         password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
@@ -53,13 +54,14 @@ test('fails to register when username already taken', async () => {
 
 test('login user', async () => {
   const userToLogin = {
+    username: 'testuser',
     email: 'test@test.com',
     password: 'testuser',
   };
 
   const loginResponse = await login('test@test.com', 'testuser');
 
-  expect(loginResponse.user.email).toBe(userToLogin.email);
+  expect(loginResponse.user.username).toBe(userToLogin.username);
 });
 
 test('fails to login when credentials are incorrect', async () => {
@@ -70,4 +72,12 @@ test('fails to login when credentials are incorrect', async () => {
   } catch (error) {
     expect(error.message.message).toBe('Password is wrong');
   }
+});
+
+test('gets current user info', async () => {
+  const userId = '1';
+
+  const user = await getCurrentUser(userId);
+
+  expect(user).not.toBeNull();
 });

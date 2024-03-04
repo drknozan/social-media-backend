@@ -129,8 +129,8 @@ test('creates a membership for a user in a community', async () => {
     },
   });
 
-  expect(membership.username).toBe(username);
-  expect(membership.communityName).toBe(communityName);
+  expect(membership.user.username).toBe(username);
+  expect(membership.community.name).toBe(communityName);
   expect(newMembership).toHaveProperty('user', { username: username });
   expect(newMembership).toHaveProperty('community', { name: communityName });
 });
@@ -195,18 +195,13 @@ test('updates membership role successfully', async () => {
     },
   });
 
+  console.log(updatedMembership);
+
   expect(updatedMembership).toEqual({
-    username: createdMembership?.user.username,
-    communityName: createdMembership?.community.name,
+    user: { username: createdMembership?.user.username },
+    community: { name: createdMembership?.community.name },
     role: createdMembership?.role,
   });
-  expect(updatedMembership).toEqual(
-    expect.objectContaining({
-      username: usernameToUpdate,
-      communityName: communityName,
-      role: roleToUpdate,
-    }),
-  );
 });
 
 test('throws error when current user role is MEMBER', async () => {

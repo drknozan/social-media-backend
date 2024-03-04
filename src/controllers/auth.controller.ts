@@ -35,4 +35,14 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { register, login };
+const getCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await authService.getCurrentUser(req.user?.id);
+
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { register, login, getCurrentUser };

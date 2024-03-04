@@ -3,6 +3,7 @@ import { IUser } from '../interfaces/IUser';
 import * as bcrypt from 'bcryptjs';
 import generateToken from '../utils/generateToken';
 import HttpError from '../utils/httpError';
+import { IProfile } from '@/interfaces/IProfile';
 
 const register = async (username: string, email: string, password: string): Promise<{ user: IUser; token: string }> => {
   const existingUserByUsername = await prisma.user.findUnique({
@@ -46,7 +47,6 @@ const register = async (username: string, email: string, password: string): Prom
   return {
     user: {
       username: createdUser.username,
-      email: createdUser.email,
       profileVisibility: createdUser.profileVisibility,
       allowDm: createdUser.allowDm,
     },
@@ -70,7 +70,6 @@ const login = async (email: string, password: string): Promise<{ user: IUser; to
       return {
         user: {
           username: user.username,
-          email: user.email,
           profileVisibility: user.profileVisibility,
           allowDm: user.allowDm,
         },
@@ -84,4 +83,80 @@ const login = async (email: string, password: string): Promise<{ user: IUser; to
   }
 };
 
-export { register, login };
+const getCurrentUser = async (userId: string): Promise<IProfile> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      username: true,
+      email: true,
+      allowDm: true,
+      profileVisibility: true,
+      posts: {
+        select: {
+          slug: true,
+          title: true,
+          content: true,
+          upvotes: true,
+          downvotes: true,
+          createdAt: true,
+          community: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+      followed: {
+        select: {
+          followed: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      },
+      followers: {
+        select: {
+          follower: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      },
+      memberships: {
+        select: {
+          community: {
+            select: {
+              name: true,
+            },
+          },
+          user: {
+            select: {
+              username: true,
+            },
+          },
+          role: true,
+        },
+      },
+      activities: {
+        select: {
+          post: {
+            select: {
+              slug: true,
+              title: true,
+            },
+          },
+          activityType: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+
+  return user;
+};
+
+export { register, login, getCurrentUser };
