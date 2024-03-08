@@ -29,8 +29,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Error handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
-  return res.status(err.statusCode).send(err.message);
+app.use((err: HttpError | Error, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof HttpError) {
+    return res.status(err.statusCode).send(err.message);
+  } else {
+    return res.status(500).send({ message: 'Something went wrong' });
+  }
 });
 
 export default app;

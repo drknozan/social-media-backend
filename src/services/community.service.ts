@@ -1,7 +1,8 @@
 import HttpError from '../utils/httpError';
 import prisma from '../config/db';
 import { ICommunity } from '../interfaces/ICommunity';
-import { IMembership } from '@/interfaces/IMembership';
+import { IMembership } from '../interfaces/IMembership';
+import redisClient from '../config/redis';
 
 const createCommunity = async (communityName: string, description: string): Promise<ICommunity> => {
   const existingCommunity = await prisma.community.findFirst({
@@ -33,6 +34,12 @@ const createCommunity = async (communityName: string, description: string): Prom
 };
 
 const getCommunity = async (communityName: string): Promise<ICommunity> => {
+  const cachedCommunity = await redisClient.get(communityName);
+
+  if (cachedCommunity) {
+    return JSON.parse(cachedCommunity);
+  }
+
   const community = await prisma.community.findFirst({
     where: {
       name: {
@@ -65,6 +72,8 @@ const getCommunity = async (communityName: string): Promise<ICommunity> => {
   if (!community) {
     throw new HttpError(400, { message: 'No community found with given name' });
   }
+
+  await redisClient.set(community.name, JSON.stringify(community));
 
   return community;
 };
