@@ -26,7 +26,6 @@ app.use(routes);
 
 // Catch 404
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(process.env.YO);
   next(new HttpError(404, 'Not found'));
 });
 

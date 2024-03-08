@@ -3,6 +3,7 @@ import { IPost } from '../interfaces/IPost';
 import HttpError from '../utils/httpError';
 import { nanoid } from 'nanoid';
 import slugify from 'slugify';
+import redisClient from '../config/redis';
 
 const createPost = async (communityName: string, title: string, content: string, userId: string): Promise<IPost> => {
   const communityByName = await prisma.community.findUnique({
@@ -52,6 +53,8 @@ const createPost = async (communityName: string, title: string, content: string,
       },
     },
   });
+
+  redisClient.del(communityName);
 
   return newPost;
 };
