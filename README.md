@@ -54,3 +54,17 @@
     ├── services
     ├── types
     └── utils
+
+## Database Diagram
+
+![](./assets/db.png)
+
+## Authentication
+
+![](./assets/auth.png)
+
+## Cache Strategy
+
+![](./assets/cache1.png)
+
+![](./assets/cache2.png)
