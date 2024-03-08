@@ -4,10 +4,13 @@ import HttpError from './utils/httpError';
 import routes from './routes';
 import morgan from 'morgan';
 import cors from 'cors';
+import helmet from 'helmet';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
+
+app.use(helmet());
 
 app.use(cors());
 
