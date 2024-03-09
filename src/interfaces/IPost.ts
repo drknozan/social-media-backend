@@ -1,3 +1,4 @@
+import { ICommunity } from './ICommunity';
 import { IUser } from './IUser';
 
 export interface IPost {
@@ -8,4 +9,5 @@ export interface IPost {
   downvotes?: number;
   createdAt?: Date;
   user?: IUser;
+  community?: ICommunity;
 }

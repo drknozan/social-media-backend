@@ -59,6 +59,11 @@ const getCommunity = async (communityName: string): Promise<ICommunity> => {
           upvotes: true,
           downvotes: true,
           createdAt: true,
+          community: {
+            select: {
+              name: true,
+            },
+          },
           user: {
             select: {
               username: true,

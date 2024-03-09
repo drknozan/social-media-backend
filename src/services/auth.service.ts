@@ -83,76 +83,15 @@ const login = async (email: string, password: string): Promise<{ user: IUser; to
   }
 };
 
-const getCurrentUser = async (userId: string): Promise<IProfile> => {
+const getCurrentUser = async (userId: string): Promise<IUser> => {
   const user = await prisma.user.findUnique({
     where: {
       id: userId,
     },
     select: {
       username: true,
-      email: true,
       allowDm: true,
       profileVisibility: true,
-      posts: {
-        select: {
-          slug: true,
-          title: true,
-          content: true,
-          upvotes: true,
-          downvotes: true,
-          createdAt: true,
-          community: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-      followed: {
-        select: {
-          followed: {
-            select: {
-              username: true,
-            },
-          },
-        },
-      },
-      followers: {
-        select: {
-          follower: {
-            select: {
-              username: true,
-            },
-          },
-        },
-      },
-      memberships: {
-        select: {
-          community: {
-            select: {
-              name: true,
-            },
-          },
-          user: {
-            select: {
-              username: true,
-            },
-          },
-          role: true,
-        },
-      },
-      activities: {
-        select: {
-          post: {
-            select: {
-              slug: true,
-              title: true,
-            },
-          },
-          activityType: true,
-          createdAt: true,
-        },
-      },
     },
   });
 
