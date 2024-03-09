@@ -12,31 +12,31 @@ const createPostSchema = object({
 
 const getPostSchema = object({
   params: object({
-    postId: string().max(200, 'Post id can be 200 characters maximum').required('Post id is required'),
+    slug: string().max(200, 'Post id can be 200 characters maximum').required('Post id is required'),
   }),
 });
 
 const deletePostSchema = object({
   params: object({
-    postId: string().max(200, 'Post id can be 200 characters maximum').required('Post id is required'),
+    slug: string().max(200, 'Post id can be 200 characters maximum').required('Post id is required'),
   }),
 });
 
 const upvotePostSchema = object({
   params: object({
-    postId: string().max(200, 'Post id can be 200 characters maximum').required('Post id is required'),
+    slug: string().max(200, 'Post id can be 200 characters maximum').required('Post id is required'),
   }),
 });
 
 const downvotePostSchema = object({
   params: object({
-    postId: string().max(200, 'Post id can be 200 characters maximum').required('Post id is required'),
+    slug: string().max(200, 'Post id can be 200 characters maximum').required('Post id is required'),
   }),
 });
 
 const createCommentSchema = object({
   params: object({
-    postId: string().max(200, 'Post id can be 200 characters maximum').required('Post id is required'),
+    slug: string().max(200, 'Post id can be 200 characters maximum').required('Post id is required'),
   }),
   body: object({
     content: string().max(750, 'Comment can be 750 characters maximum').required('Content is required'),

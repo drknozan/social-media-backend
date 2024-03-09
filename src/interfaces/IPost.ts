@@ -1,3 +1,4 @@
+import { IComment } from './IComment';
 import { ICommunity } from './ICommunity';
 import { IUser } from './IUser';
 
@@ -10,4 +11,5 @@ export interface IPost {
   createdAt?: Date;
   user?: IUser;
   community?: ICommunity;
+  comments?: IComment[];
 }
