@@ -67,4 +67,8 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { register, login, getCurrentUser, getCurrentUserProfile, updateUser };
+const logout = async (req: Request, res: Response) => {
+  res.clearCookie('token').end();
+};
+
+export { register, login, getCurrentUser, getCurrentUserProfile, updateUser, logout };

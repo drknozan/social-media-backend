@@ -18,4 +18,6 @@ router
   .route('/profile/update')
   .put(validateAuth, validateRequest(authSchema.updateUserSchema), authController.updateUser);
 
+router.route('/logout').post(validateAuth, authController.logout);
+
 export default router;
