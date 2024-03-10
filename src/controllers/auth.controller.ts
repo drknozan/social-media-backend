@@ -45,6 +45,16 @@ const getCurrentUser = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
+const getCurrentUserProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await authService.getCurrentUserProfile(req.user?.id);
+
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password, allowDm, profileVisibility } = req.body;
 
@@ -57,4 +67,4 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { register, login, getCurrentUser, updateUser };
+export { register, login, getCurrentUser, getCurrentUserProfile, updateUser };

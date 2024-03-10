@@ -6,14 +6,14 @@ import * as userSchema from '../schemas/user.schema';
 
 const router = express.Router();
 
-router.route('/user/:username').get(validateAuth, validateRequest(userSchema.getUserSchema), userController.getUser);
+router.route('/users/:username').get(validateAuth, validateRequest(userSchema.getUserSchema), userController.getUser);
 
 router
-  .route('user/:username/follow')
+  .route('users/:username/follow')
   .post(validateAuth, validateRequest(userSchema.followUserSchema), userController.followUser);
 
 router
-  .route('user/:username/unfollow')
+  .route('users/:username/unfollow')
   .post(validateAuth, validateRequest(userSchema.unFollowUserSchema), userController.unfollowUser);
 
 export default router;

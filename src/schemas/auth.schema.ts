@@ -7,7 +7,7 @@ const registerSchema = object({
       .min(8, 'Password must be 8 characters minimum')
       .max(30, 'Password can be 30 characters maximum')
       .required('Password is required'),
-    email: string().min(5).email('Not a valid email').required('Email is requred'),
+    email: string().min(5).email('Not a valid email').required('Email is required'),
   }),
 });
 

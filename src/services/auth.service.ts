@@ -98,6 +98,82 @@ const getCurrentUser = async (userId: string): Promise<IUser> => {
   return user;
 };
 
+const getCurrentUserProfile = async (userId: string): Promise<IProfile> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      username: true,
+      email: true,
+      allowDm: true,
+      profileVisibility: true,
+      posts: {
+        select: {
+          slug: true,
+          title: true,
+          content: true,
+          upvotes: true,
+          downvotes: true,
+          createdAt: true,
+          community: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+      followed: {
+        select: {
+          followed: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      },
+      followers: {
+        select: {
+          follower: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      },
+      memberships: {
+        select: {
+          community: {
+            select: {
+              name: true,
+            },
+          },
+          user: {
+            select: {
+              username: true,
+            },
+          },
+          role: true,
+        },
+      },
+      activities: {
+        select: {
+          post: {
+            select: {
+              slug: true,
+              title: true,
+            },
+          },
+          activityType: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+
+  return user;
+};
+
 const updateUser = async (userInput, userId: string): Promise<IProfile> => {
   const { email, password, allowDm, profileVisibility } = userInput;
 
@@ -188,4 +264,4 @@ const updateUser = async (userInput, userId: string): Promise<IProfile> => {
   return user;
 };
 
-export { register, login, getCurrentUser, updateUser };
+export { register, login, getCurrentUser, getCurrentUserProfile, updateUser };

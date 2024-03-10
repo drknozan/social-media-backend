@@ -10,7 +10,9 @@ router.route('/register').post(validateRequest(authSchema.registerSchema), authC
 
 router.route('/login').post(validateRequest(authSchema.loginSchema), authController.login);
 
-router.route('/profile').post(validateAuth, authController.getCurrentUser);
+router.route('/user').get(validateAuth, authController.getCurrentUser);
+
+router.route('/profile').get(validateAuth, authController.getCurrentUserProfile);
 
 router
   .route('/profile/update')

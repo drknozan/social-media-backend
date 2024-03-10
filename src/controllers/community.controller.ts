@@ -5,7 +5,7 @@ const createCommunity = async (req: Request, res: Response, next: NextFunction) 
   const { communityName, description } = req.body;
 
   try {
-    const community = await communityService.createCommunity(communityName, description);
+    const community = await communityService.createCommunity(communityName, description, req.user?.id);
 
     return res.send(community);
   } catch (error) {

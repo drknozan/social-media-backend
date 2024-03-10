@@ -4,7 +4,7 @@ import { ICommunity } from '../interfaces/ICommunity';
 import { IMembership } from '../interfaces/IMembership';
 import redisClient from '../config/redis';
 
-const createCommunity = async (communityName: string, description: string): Promise<ICommunity> => {
+const createCommunity = async (communityName: string, description: string, userId: string): Promise<ICommunity> => {
   const existingCommunity = await prisma.community.findFirst({
     where: {
       name: {
@@ -24,13 +24,22 @@ const createCommunity = async (communityName: string, description: string): Prom
       description,
     },
     select: {
+      id: true,
       name: true,
       description: true,
       createdAt: true,
     },
   });
 
-  return community;
+  await prisma.membership.create({
+    data: {
+      userId,
+      communityId: community.id,
+      role: 'FOUNDER',
+    },
+  });
+
+  return { name: community.name, description: community.description, createdAt: community.createdAt };
 };
 
 const getCommunity = async (communityName: string): Promise<ICommunity> => {
