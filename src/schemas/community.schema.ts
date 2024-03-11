@@ -17,6 +17,12 @@ const getCommunitySchema = object({
   }),
 });
 
+const getCommunitiesSchema = object({
+  query: object({
+    q: string().max(40, 'Community name can be 40 characters maximum'),
+  }),
+});
+
 const createMembershipSchema = object({
   body: object({
     communityName: string()
@@ -46,6 +52,7 @@ const deleteMembershipSchema = object({
 export {
   createCommunitySchema,
   getCommunitySchema,
+  getCommunitiesSchema,
   createMembershipSchema,
   updateMembershipSchema,
   deleteMembershipSchema,

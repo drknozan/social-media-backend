@@ -25,6 +25,18 @@ const getCommunity = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
+const getCommunities = async (req: Request, res: Response, next: NextFunction) => {
+  const query = req.query.q as string;
+
+  try {
+    const communities = await communityService.getCommunities(query);
+
+    return res.send(communities);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const createMembership = async (req: Request, res: Response, next: NextFunction) => {
   const { communityName } = req.body;
 
@@ -61,4 +73,4 @@ const deleteMembership = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-export { createCommunity, getCommunity, createMembership, updateMembership, deleteMembership };
+export { createCommunity, getCommunity, getCommunities, createMembership, updateMembership, deleteMembership };

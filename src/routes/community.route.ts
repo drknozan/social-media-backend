@@ -11,6 +11,10 @@ router
   .get(validateRequest(communitySchema.getCommunitySchema), communityController.getCommunity);
 
 router
+  .route('/community/search/')
+  .get(validateAuth, validateRequest(communitySchema.getCommunitiesSchema), communityController.getCommunities);
+
+router
   .route('/community/create')
   .post(validateAuth, validateRequest(communitySchema.createCommunitySchema), communityController.createCommunity);
 

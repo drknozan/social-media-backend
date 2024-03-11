@@ -5,6 +5,7 @@ import {
   createMembership,
   updateMembership,
   deleteMembership,
+  getCommunities,
 } from '../src/services/community.service';
 
 beforeEach(async () => {
@@ -50,8 +51,9 @@ afterEach(async () => {
 test('creates a new community', async () => {
   const communityName = 'new community';
   const description = 'this is a new community';
+  const userId = '1';
 
-  const createdCommunity = await createCommunity(communityName, description);
+  const createdCommunity = await createCommunity(communityName, description, userId);
 
   const newCommunity = await prisma.community.findFirst({
     where: {
@@ -69,9 +71,10 @@ test('fails to create a community with existing name', async () => {
 
   const existingCommunityName = 'community';
   const existingCommunityDescription = 'This community already exists';
+  const userId = '1';
 
   try {
-    await createCommunity(existingCommunityName, existingCommunityDescription);
+    await createCommunity(existingCommunityName, existingCommunityDescription, userId);
   } catch (error) {
     expect(error.statusCode).toBe(400);
     expect(error.message.message).toBe('Community name already taken');
@@ -319,4 +322,12 @@ test('throws error if a given user not member of given community when leaving th
     expect(error.statusCode).toBe(400);
     expect(error.message.message).toBe('Current user not member of given community');
   }
+});
+
+test('searchs communities with given query string', async () => {
+  const q = 'com';
+
+  const communities = await getCommunities(q);
+
+  expect(communities[0]).toHaveProperty('name', 'community');
 });
