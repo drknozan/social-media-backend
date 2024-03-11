@@ -27,9 +27,11 @@ const getCommunity = async (req: Request, res: Response, next: NextFunction) => 
 
 const getCommunities = async (req: Request, res: Response, next: NextFunction) => {
   const query = req.query.q as string;
+  const offset = req.query.offset as string;
+  const limit = req.query.limit as string;
 
   try {
-    const communities = await communityService.getCommunities(query);
+    const communities = await communityService.getCommunities(query, offset, limit);
 
     return res.send(communities);
   } catch (error) {

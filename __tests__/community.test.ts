@@ -327,7 +327,7 @@ test('throws error if a given user not member of given community when leaving th
 test('searchs communities with given query string', async () => {
   const q = 'com';
 
-  const communities = await getCommunities(q);
+  const communities = await getCommunities(q, '0', '10');
 
-  expect(communities[0]).toHaveProperty('name', 'community');
+  expect(communities.result[0]).toHaveProperty('name', 'community');
 });

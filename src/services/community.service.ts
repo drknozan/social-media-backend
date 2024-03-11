@@ -92,7 +92,19 @@ const getCommunity = async (communityName: string): Promise<ICommunity> => {
   return community;
 };
 
-const getCommunities = async (q: string): Promise<ICommunity[]> => {
+const getCommunities = async (
+  q: string,
+  offset: string,
+  limit: string,
+): Promise<{ result: ICommunity[]; count: number }> => {
+  const communityCount = await prisma.community.count({
+    where: {
+      name: {
+        contains: q,
+      },
+    },
+  });
+
   const communities = await prisma.community.findMany({
     where: {
       name: {
@@ -104,9 +116,11 @@ const getCommunities = async (q: string): Promise<ICommunity[]> => {
         _count: 'desc',
       },
     },
+    skip: Number(offset) || 0,
+    take: Number(limit) || 10,
   });
 
-  return communities;
+  return { result: communities, count: communityCount };
 };
 
 const createMembership = async (communityName: string, userId: string): Promise<IMembership> => {
