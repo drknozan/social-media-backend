@@ -16,4 +16,6 @@ router
   .route('users/:username/unfollow')
   .post(validateAuth, validateRequest(userSchema.unFollowUserSchema), userController.unfollowUser);
 
+router.route('users/recommendations').get(validateAuth, userController.getUserRecommendations);
+
 export default router;

@@ -118,6 +118,16 @@ const getCommunities = async (
     },
     skip: Number(offset) || 0,
     take: Number(limit) || 10,
+    select: {
+      name: true,
+      description: true,
+      createdAt: true,
+      _count: {
+        select: {
+          memberships: true,
+        },
+      },
+    },
   });
 
   return { result: communities, count: communityCount };

@@ -5,4 +5,5 @@ export interface ICommunity {
   description?: string;
   createdAt?: Date;
   posts?: IPost[];
+  _count?: { memberships: number };
 }

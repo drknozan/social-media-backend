@@ -37,4 +37,14 @@ const unfollowUser = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-export { getUser, followUser, unfollowUser };
+const getUserRecommendations = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const users = await userService.getUserRecommendations(req.user?.id);
+
+    res.send(users);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getUser, followUser, unfollowUser, getUserRecommendations };

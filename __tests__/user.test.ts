@@ -1,4 +1,4 @@
-import { followUser, getUser, unfollowUser } from '../src/services/user.service';
+import { followUser, getUser, getUserRecommendations, unfollowUser } from '../src/services/user.service';
 import prisma from '../src/config/db';
 
 beforeEach(async () => {
@@ -14,6 +14,12 @@ beforeEach(async () => {
         id: '2',
         username: 'user2',
         email: 'user2@test.com',
+        password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
+      },
+      {
+        id: '3',
+        username: 'user3',
+        email: 'user3@test.com',
         password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
       },
     ],
@@ -158,4 +164,18 @@ test('throws an error if user not following given user', async () => {
     expect(error.statusCode).toBe(400);
     expect(error.message.message).toBe('Not following given user');
   }
+});
+
+test('recommends followed users of following users', async () => {
+  const firstUserId = '1';
+  const secondUserId = '2';
+  const secondUsername = 'user2';
+  const thirdUsername = 'user3';
+
+  await followUser(secondUsername, firstUserId);
+  await followUser(thirdUsername, secondUserId);
+
+  const recommendedUsers = await getUserRecommendations(firstUserId);
+
+  expect(recommendedUsers[0]).toHaveProperty('id', '3');
 });

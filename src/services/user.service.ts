@@ -150,4 +150,30 @@ const unfollowUser = async (username: string, userId: string): Promise<IFollow> 
   return follow;
 };
 
-export { getUser, followUser, unfollowUser };
+const getUserRecommendations = async (userId: string): Promise<IUser[]> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      followed: true,
+      memberships: true,
+    },
+  });
+
+  const followedUserIds = user.followed.map(user => user.followedId);
+
+  const recommendedUsers = await prisma.user.findMany({
+    where: {
+      id: { notIn: [userId, ...followedUserIds] },
+      followers: {
+        some: { followerId: { in: followedUserIds } },
+      },
+    },
+    take: 15,
+  });
+
+  return recommendedUsers;
+};
+
+export { getUser, followUser, unfollowUser, getUserRecommendations };
