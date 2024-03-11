@@ -1,20 +1,21 @@
 import { login, register, getCurrentUser, updateUser } from '../src/services/auth.service';
 import prisma from '../src/config/db';
+import * as bcrypt from 'bcryptjs';
 
-beforeAll(async () => {
+beforeEach(async () => {
   return await prisma.user.createMany({
     data: [
       {
         id: '1',
         username: 'testuser',
         email: 'test@test.com',
-        password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
+        password: await bcrypt.hash('testuser', 10),
       },
     ],
   });
 });
 
-afterAll(async () => {
+afterEach(async () => {
   return await prisma.user.deleteMany({});
 });
 
@@ -22,13 +23,11 @@ test('registers new user', async () => {
   const userToRegister = {
     username: 'NewUser',
     email: 'newuser@newuser.com',
-    password: 'newuser',
+    password: 'testuser',
   };
 
-  // Register user
   await register(userToRegister.username, userToRegister.email, userToRegister.password);
 
-  // Check if the user is created
   const newCustomer = await prisma.user.findUnique({
     where: {
       email: userToRegister.email,
@@ -53,15 +52,13 @@ test('fails to register when username already taken', async () => {
 });
 
 test('login user', async () => {
-  const userToLogin = {
-    username: 'testuser',
-    email: 'test@test.com',
-    password: 'testuser',
-  };
+  const email = 'test@test.com';
+  const username = 'testuser';
+  const password = 'testuser';
 
-  const loginResponse = await login('test@test.com', 'testuser');
+  const loginResponse = await login(email, password);
 
-  expect(loginResponse.user.username).toBe(userToLogin.username);
+  expect(loginResponse.user.username).toBe(username);
 });
 
 test('fails to login when credentials are incorrect', async () => {

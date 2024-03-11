@@ -15,19 +15,19 @@ beforeEach(async () => {
         id: '1',
         username: 'user',
         email: 'user@test.com',
-        password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
+        password: 'testuser',
       },
       {
         id: '2',
         username: 'second-user',
         email: 'second-user@test.com',
-        password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
+        password: 'testuser',
       },
       {
         id: '3',
         username: 'mod-user',
         email: 'mod-user@test.com',
-        password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
+        password: 'testuser',
       },
     ],
   });
@@ -330,4 +330,18 @@ test('searchs communities with given query string', async () => {
   const communities = await getCommunities(q, '0', '10');
 
   expect(communities.result[0]).toHaveProperty('name', 'community');
+  expect(communities.count).toBe(1);
+});
+
+test('returns the searched communities when the offset changes', async () => {
+  const q = '';
+
+  await createCommunity('1', 'test', '1');
+  await createCommunity('2', 'test', '1');
+  await createCommunity('3', 'test', '1');
+  await createCommunity('4', 'test', '1');
+
+  const communities = await getCommunities(q, '3', '3');
+
+  expect(communities.result[0]).toHaveProperty('name', '4');
 });

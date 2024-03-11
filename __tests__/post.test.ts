@@ -16,13 +16,13 @@ beforeEach(async () => {
         id: '1',
         username: 'user',
         email: 'user@test.com',
-        password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
+        password: 'testuser',
       },
       {
         id: '2',
         username: 'user2',
         email: 'user2@test.com',
-        password: '$2a$10$i4hvrPqEHkQNJ9.QzLOnx.nWs0Z9v3oqXEF1np3Fzj7qMJZN0qXca', // hashed "testuser"
+        password: 'testuser',
       },
     ],
   });
