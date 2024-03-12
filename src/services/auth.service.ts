@@ -48,7 +48,6 @@ const register = async (username: string, email: string, password: string): Prom
     user: {
       username: createdUser.username,
       profileVisibility: createdUser.profileVisibility,
-      allowDm: createdUser.allowDm,
     },
     token,
   };
@@ -71,7 +70,6 @@ const login = async (email: string, password: string): Promise<{ user: IUser; to
         user: {
           username: user.username,
           profileVisibility: user.profileVisibility,
-          allowDm: user.allowDm,
         },
         token,
       };
@@ -90,8 +88,6 @@ const getCurrentUser = async (userId: string): Promise<IUser> => {
     },
     select: {
       username: true,
-      allowDm: true,
-      profileVisibility: true,
     },
   });
 
@@ -106,8 +102,8 @@ const getCurrentUserProfile = async (userId: string): Promise<IProfile> => {
     select: {
       username: true,
       email: true,
-      allowDm: true,
       profileVisibility: true,
+      bio: true,
       posts: {
         select: {
           slug: true,
@@ -175,7 +171,7 @@ const getCurrentUserProfile = async (userId: string): Promise<IProfile> => {
 };
 
 const updateUser = async (userInput, userId: string): Promise<IProfile> => {
-  const { email, password, allowDm, profileVisibility } = userInput;
+  const { email, password, profileVisibility, bio } = userInput;
 
   let hashedPassword;
 
@@ -190,14 +186,14 @@ const updateUser = async (userInput, userId: string): Promise<IProfile> => {
     data: {
       email: email || undefined,
       password: hashedPassword || undefined,
-      allowDm: allowDm || undefined,
       profileVisibility: profileVisibility || undefined,
+      bio: bio || undefined,
     },
     select: {
       username: true,
       email: true,
-      allowDm: true,
       profileVisibility: true,
+      bio: true,
       posts: {
         select: {
           slug: true,

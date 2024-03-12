@@ -29,8 +29,8 @@ const updateUserSchema = object({
       .max(30, 'Password can be 30 characters maximum')
       .optional(),
     email: string().email('No a valid email').optional(),
-    allowDm: boolean().optional(),
     profileVisiblity: boolean().optional(),
+    bio: string().max(50, 'Bio can be 50 characters maximum').optional(),
   }),
 });
 

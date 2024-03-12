@@ -18,14 +18,12 @@ model User {
   username            String      @unique
   email               String      @unique
   password            String
+  bio                 String?
   profileVisibility   Boolean     @default(false) 
-  allowDm             Boolean     @default(false)
   createdAt           DateTime    @default(now()) 
 
   posts               Post[]
   memberships         Membership[]
-  sentMessages        Message[]   @relation("Sender") 
-  receivedMessages    Message[]   @relation("Recipient")
   followers           Follow[]    @relation("Followers") 
   followed            Follow[]    @relation("Followed")
   activities          Activity[]
@@ -82,19 +80,6 @@ model Post {
   comments             Comment[]
 
   @@map("posts")
-}
-
-model Message {
-  id                   String       @id @default(uuid())
-  from                 String      
-  to                   String     
-  content              String
-  createdAt            DateTime     @default(now()) 
-
-  sender               User         @relation("Sender", fields: [from], references: [id], onDelete: Cascade)
-  recipient            User         @relation("Recipient", fields: [to], references: [id], onDelete: Cascade)
-
-  @@map("messages")
 }
 
 model Follow {

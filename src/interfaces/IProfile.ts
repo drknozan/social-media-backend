@@ -7,7 +7,7 @@ export interface IProfile {
   username: string;
   email: string;
   profileVisibility: boolean;
-  allowDm: boolean;
+  bio: string;
   posts: IPost[];
   followed: IFollow[];
   followers: IFollow[];

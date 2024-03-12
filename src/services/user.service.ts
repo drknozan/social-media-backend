@@ -11,8 +11,8 @@ const getUser = async (username: string): Promise<IUser> => {
     },
     select: {
       username: true,
-      allowDm: true,
       profileVisibility: true,
+      bio: true,
       posts: {
         select: {
           slug: true,
@@ -170,6 +170,9 @@ const getUserRecommendations = async (userId: string): Promise<IUser[]> => {
       followers: {
         some: { followerId: { in: followedUserIds } },
       },
+    },
+    select: {
+      username: true,
     },
     take: 15,
   });
