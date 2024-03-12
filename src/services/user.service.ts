@@ -210,6 +210,19 @@ const getUserFeed = async (userId: string): Promise<IPost[]> => {
         },
       ],
     },
+    select: {
+      slug: true,
+      title: true,
+      content: true,
+      upvotes: true,
+      downvotes: true,
+      createdAt: true,
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
     orderBy: {
       createdAt: 'desc',
     },
