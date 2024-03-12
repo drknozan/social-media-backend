@@ -47,4 +47,14 @@ const getUserRecommendations = async (req: Request, res: Response, next: NextFun
   }
 };
 
-export { getUser, followUser, unfollowUser, getUserRecommendations };
+const getUserFeed = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const feedPosts = await userService.getUserFeed(req.user?.id);
+
+    res.send(feedPosts);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getUser, followUser, unfollowUser, getUserRecommendations, getUserFeed };

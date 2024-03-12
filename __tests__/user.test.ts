@@ -1,4 +1,4 @@
-import { followUser, getUser, getUserRecommendations, unfollowUser } from '../src/services/user.service';
+import { followUser, getUser, getUserFeed, getUserRecommendations, unfollowUser } from '../src/services/user.service';
 import prisma from '../src/config/db';
 
 beforeEach(async () => {
@@ -25,23 +25,40 @@ beforeEach(async () => {
     ],
   });
 
-  const createCommunities = prisma.community.create({
-    data: {
-      id: '1',
-      name: 'community',
-      description: 'description',
-    },
+  const createCommunities = prisma.community.createMany({
+    data: [
+      {
+        id: '1',
+        name: 'community',
+        description: 'description',
+      },
+      {
+        id: '2',
+        name: 'community2',
+        description: 'description',
+      },
+    ],
   });
 
-  const createPosts = prisma.post.create({
-    data: {
-      id: '1',
-      slug: 'test',
-      userId: '1',
-      communityId: '1',
-      title: 'test-title',
-      content: 'test-content',
-    },
+  const createPosts = prisma.post.createMany({
+    data: [
+      {
+        id: '1',
+        slug: 'test',
+        userId: '1',
+        communityId: '1',
+        title: 'test-title',
+        content: 'test-content',
+      },
+      {
+        id: '2',
+        slug: 'test2',
+        userId: '3',
+        communityId: '2',
+        title: 'test-title',
+        content: 'test-content',
+      },
+    ],
   });
 
   const createComments = prisma.comment.create({
@@ -178,4 +195,25 @@ test('recommends followed users of following users', async () => {
   const recommendedUsers = await getUserRecommendations(firstUserId);
 
   expect(recommendedUsers[0]).toHaveProperty('id', '3');
+});
+
+test('gets user feed', async () => {
+  const secondUserId = '2';
+  const firstUsername = 'user';
+  const communityId = '2';
+
+  await followUser(firstUsername, secondUserId);
+
+  await prisma.membership.create({
+    data: {
+      userId: secondUserId,
+      communityId: communityId,
+      role: 'MEMBER',
+    },
+  });
+
+  const feedPosts = await getUserFeed(secondUserId);
+
+  expect(feedPosts[0]).toHaveProperty('slug', 'test');
+  expect(feedPosts[1]).toHaveProperty('slug', 'test2');
 });

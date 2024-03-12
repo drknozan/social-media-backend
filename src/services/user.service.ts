@@ -2,6 +2,7 @@ import HttpError from '../utils/httpError';
 import prisma from '../config/db';
 import { IUser } from '../interfaces/IUser';
 import { IFollow } from '@/interfaces/IFollow';
+import { IPost } from '@/interfaces/IPost';
 
 const getUser = async (username: string): Promise<IUser> => {
   const user = await prisma.user.findUnique({
@@ -176,4 +177,45 @@ const getUserRecommendations = async (userId: string): Promise<IUser[]> => {
   return recommendedUsers;
 };
 
-export { getUser, followUser, unfollowUser, getUserRecommendations };
+const getUserFeed = async (userId: string): Promise<IPost[]> => {
+  const joinedCommunityAndFollowedIds = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      memberships: {
+        select: {
+          communityId: true,
+        },
+      },
+      followed: {
+        select: {
+          followedId: true,
+        },
+      },
+    },
+  });
+
+  const joinedCommunityIds = joinedCommunityAndFollowedIds.memberships.map(membership => membership.communityId);
+  const followedUserIds = joinedCommunityAndFollowedIds.followed.map(followed => followed.followedId);
+
+  const feedPosts = await prisma.post.findMany({
+    where: {
+      OR: [
+        {
+          communityId: { in: joinedCommunityIds },
+        },
+        {
+          userId: { in: followedUserIds },
+        },
+      ],
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  return feedPosts;
+};
+
+export { getUser, followUser, unfollowUser, getUserRecommendations, getUserFeed };
