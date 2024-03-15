@@ -56,10 +56,10 @@ const getCurrentUserProfile = async (req: Request, res: Response, next: NextFunc
 };
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, password, allowDm, profileVisibility } = req.body;
+  const { email, password, bio, profileVisibility } = req.body;
 
   try {
-    const user = await authService.updateUser({ email, password, allowDm, profileVisibility }, req.user?.id);
+    const user = await authService.updateUser({ email, password, bio, profileVisibility }, req.user?.id);
 
     res.send(user);
   } catch (error) {
