@@ -176,7 +176,9 @@ const updateUser = async (userInput, userId: string): Promise<IProfile> => {
   let hashedPassword;
 
   if (password) {
+    console.log(password);
     hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword);
   }
 
   const user = await prisma.user.update({
@@ -186,7 +188,7 @@ const updateUser = async (userInput, userId: string): Promise<IProfile> => {
     data: {
       email: email || undefined,
       password: hashedPassword || undefined,
-      profileVisibility: profileVisibility || undefined,
+      profileVisibility: profileVisibility,
       bio: bio || undefined,
     },
     select: {

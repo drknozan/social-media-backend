@@ -26,6 +26,11 @@ const getUser = async (username: string): Promise<IUser> => {
               name: true,
             },
           },
+          user: {
+            select: {
+              username: true,
+            },
+          },
         },
       },
       _count: {
@@ -223,6 +228,11 @@ const getUserFeed = async (userId: string): Promise<IPost[]> => {
       user: {
         select: {
           username: true,
+        },
+      },
+      community: {
+        select: {
+          name: true,
         },
       },
     },

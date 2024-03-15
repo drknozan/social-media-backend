@@ -80,6 +80,11 @@ const getCommunity = async (communityName: string): Promise<ICommunity> => {
           },
         },
       },
+      _count: {
+        select: {
+          memberships: true,
+        },
+      },
     },
   });
 
@@ -109,6 +114,7 @@ const getCommunities = async (
     where: {
       name: {
         contains: q,
+        mode: 'insensitive',
       },
     },
     orderBy: {

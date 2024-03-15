@@ -7,27 +7,27 @@ import * as communitySchema from '../schemas/community.schema';
 const router = express.Router();
 
 router
-  .route('/community/:name')
+  .route('/communities/:name')
   .get(validateRequest(communitySchema.getCommunitySchema), communityController.getCommunity);
 
 router
-  .route('/search/community/')
+  .route('/search/communities/')
   .get(validateAuth, validateRequest(communitySchema.getCommunitiesSchema), communityController.getCommunities);
 
 router
-  .route('/community/create')
+  .route('/communities/create')
   .post(validateAuth, validateRequest(communitySchema.createCommunitySchema), communityController.createCommunity);
 
 router
-  .route('/community/:name/join')
+  .route('/communities/:name/join')
   .post(validateAuth, validateRequest(communitySchema.createMembershipSchema), communityController.createMembership);
 
 router
-  .route('/community/:name/role')
+  .route('/communities/:name/role')
   .patch(validateAuth, validateRequest(communitySchema.updateMembershipSchema), communityController.updateMembership);
 
 router
-  .route('/community/:name/leave')
+  .route('/communities/:name/leave')
   .post(validateAuth, validateRequest(communitySchema.deleteMembershipSchema), communityController.deleteMembership);
 
 export default router;

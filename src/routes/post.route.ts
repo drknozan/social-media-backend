@@ -7,29 +7,29 @@ import * as postSchema from '../schemas/post.schema';
 const router = express.Router();
 
 router
-  .route('/post/create')
+  .route('/posts/create')
   .post(validateAuth, validateRequest(postSchema.createPostSchema), postController.createPost);
 
-router.route('/post/:slug').get(validateAuth, validateRequest(postSchema.getPostSchema), postController.getPost);
+router.route('/posts/:slug').get(validateAuth, validateRequest(postSchema.getPostSchema), postController.getPost);
 
 router
-  .route('/post/:slug')
+  .route('/posts/:slug')
   .delete(validateAuth, validateRequest(postSchema.deletePostSchema), postController.deletePost);
 
 router
-  .route('/post/:slug/upvote')
+  .route('/posts/:slug/upvote')
   .patch(validateAuth, validateRequest(postSchema.upvotePostSchema), postController.upvotePost);
 
 router
-  .route('/post/:slug/downvote')
+  .route('/posts/:slug/downvote')
   .patch(validateAuth, validateRequest(postSchema.downvotePostSchema), postController.downvotePost);
 
 router
-  .route('/post/:slug/comment')
+  .route('/posts/:slug/comment')
   .post(validateAuth, validateRequest(postSchema.createCommentSchema), postController.createComment);
 
 router
-  .route('/post/:slug/:commentId')
+  .route('/posts/:slug/:commentId')
   .delete(validateAuth, validateRequest(postSchema.deleteCommentSchema), postController.deleteComment);
 
 export default router;

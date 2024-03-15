@@ -23,7 +23,6 @@ const loginSchema = object({
 
 const updateUserSchema = object({
   body: object({
-    username: string().max(18, 'Username can be 18 characters maximum').optional(),
     password: string()
       .min(8, 'Password must be 8 characters minimum')
       .max(30, 'Password can be 30 characters maximum')

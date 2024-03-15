@@ -19,7 +19,7 @@ model User {
   email               String      @unique
   password            String
   bio                 String?
-  profileVisibility   Boolean     @default(false) 
+  profileVisibility   Boolean     @default(true) 
   createdAt           DateTime    @default(now()) 
 
   posts               Post[]

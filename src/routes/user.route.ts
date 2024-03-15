@@ -9,11 +9,11 @@ const router = express.Router();
 router.route('/users/:username').get(validateAuth, validateRequest(userSchema.getUserSchema), userController.getUser);
 
 router
-  .route('users/:username/follow')
+  .route('/follow/:username')
   .post(validateAuth, validateRequest(userSchema.followUserSchema), userController.followUser);
 
 router
-  .route('users/:username/unfollow')
+  .route('/unfollow/:username')
   .post(validateAuth, validateRequest(userSchema.unFollowUserSchema), userController.unfollowUser);
 
 router.route('/recommendations').get(validateAuth, userController.getUserRecommendations);

@@ -88,6 +88,11 @@ const getPost = async (slug: string): Promise<IPost> => {
           },
         },
       },
+      community: {
+        select: {
+          name: true,
+        },
+      },
     },
   });
 
@@ -325,7 +330,12 @@ const deleteComment = async (commentId: string, userId: string): Promise<ICommen
 
   const comment = await prisma.comment.delete({
     where: { id: commentId },
-    select: { id: true, user: { select: { username: true } }, content: true, createdAt: true },
+    select: {
+      id: true,
+      user: { select: { username: true } },
+      content: true,
+      createdAt: true,
+    },
   });
 
   return comment;
