@@ -66,5 +66,3 @@
 ## Cache Strategy
 
 ![](./assets/cache1.png)
-
-![](./assets/cache2.png)
